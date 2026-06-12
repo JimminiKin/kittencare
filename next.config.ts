@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Ready for Capacitor static export in native builds
+  // output: "export",
+  images: {
+    unoptimized: true,
+  },
 };
 
 export default nextConfig;
