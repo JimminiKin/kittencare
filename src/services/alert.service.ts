@@ -177,6 +177,9 @@ export async function buildKittenSummary(
     totalConsumedMlToday: todayFeedings
       .filter((f) => !f.foodType || f.foodType === "formula")
       .reduce((s, f) => s + (f.amountConsumedMl ?? 0), 0),
+    totalConsumedGramsToday: todayFeedings
+      .filter((f) => f.foodType === "wet" || f.foodType === "solid")
+      .reduce((s, f) => s + (f.amountConsumedGrams ?? 0), 0),
     eliminationsToday: todayEliminations.length,
     activeMedications: activeMeds.length,
     alerts,

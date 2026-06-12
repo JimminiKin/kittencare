@@ -125,6 +125,7 @@ export interface KittenSummary {
   weightChangeGrams?: number;
   feedingsToday: number;
   totalConsumedMlToday: number;
+  totalConsumedGramsToday: number;
   eliminationsToday: number;
   activeMedications: number;
   alerts: Alert[];

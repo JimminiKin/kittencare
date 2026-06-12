@@ -81,7 +81,12 @@ export function DashboardCard({ summary }: DashboardCardProps) {
             <div className="rounded-xl bg-muted/50 p-3 text-center">
               <div className="text-xs text-muted-foreground mb-1">{tc("feedings")}</div>
               <div className="font-bold text-base">{feedingsToday}</div>
-              <div className="text-xs text-muted-foreground">{totalConsumedMlToday}ml {tc("today")}</div>
+              <div className="text-xs text-muted-foreground">
+                {[
+                  totalConsumedMlToday > 0 ? `${totalConsumedMlToday}ml` : null,
+                  summary.totalConsumedGramsToday > 0 ? `${summary.totalConsumedGramsToday}g` : null,
+                ].filter(Boolean).join(" · ") || "0ml"} {tc("today")}
+              </div>
             </div>
 
             <div className="rounded-xl bg-muted/50 p-3 text-center">

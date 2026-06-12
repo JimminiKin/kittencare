@@ -2,5 +2,4 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm ci",
-  "nodeVersion": "22.x"
 }

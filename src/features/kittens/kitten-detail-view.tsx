@@ -217,7 +217,10 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
             icon={<span className="text-base">🍼</span>}
             label={t("feedingsLabel")}
             value={String(summary.feedingsToday)}
-            sub={`${summary.totalConsumedMlToday}ml`}
+            sub={[
+              summary.totalConsumedMlToday > 0 ? `${summary.totalConsumedMlToday}ml` : null,
+              summary.totalConsumedGramsToday > 0 ? `${summary.totalConsumedGramsToday}g` : null,
+            ].filter(Boolean).join(" · ") || "0ml"}
           />
           <StatTile
             icon={<Droplets className="h-4 w-4 text-sky-500" />}
