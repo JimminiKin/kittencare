@@ -219,6 +219,14 @@
     "disable": "Disable notifications",
     "blocked": "Notifications blocked — allow in browser settings"
   },
+  "migration": {
+    "banner": "You have local data — back it up to your household in the cloud.",
+    "uploadButton": "Upload now",
+    "uploading": "Uploading…",
+    "dismiss": "Not now",
+    "success": "{count} records uploaded successfully.",
+    "error": "Upload failed: {error}"
+  },
   "auth": {
     "signIn": "Sign in",
     "signUp": "Sign up",

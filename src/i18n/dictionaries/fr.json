@@ -219,6 +219,14 @@
     "disable": "Désactiver les notifications",
     "blocked": "Notifications bloquées — à autoriser dans les paramètres du navigateur"
   },
+  "migration": {
+    "banner": "Vous avez des données locales — sauvegardez-les dans le cloud.",
+    "uploadButton": "Envoyer maintenant",
+    "uploading": "Envoi…",
+    "dismiss": "Pas maintenant",
+    "success": "{count} enregistrements envoyés avec succès.",
+    "error": "Échec de l'envoi : {error}"
+  },
   "auth": {
     "signIn": "Se connecter",
     "signUp": "Créer un compte",

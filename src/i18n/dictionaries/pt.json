@@ -219,6 +219,14 @@
     "disable": "Desativar notificações",
     "blocked": "Notificações bloqueadas — ative nas configurações do navegador"
   },
+  "migration": {
+    "banner": "Você tem dados locais — faça o backup na nuvem para sua casa.",
+    "uploadButton": "Enviar agora",
+    "uploading": "Enviando…",
+    "dismiss": "Agora não",
+    "success": "{count} registros enviados com sucesso.",
+    "error": "Falha no envio: {error}"
+  },
   "auth": {
     "signIn": "Entrar",
     "signUp": "Criar conta",

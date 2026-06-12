@@ -219,6 +219,14 @@
     "disable": "Desactivar notificaciones",
     "blocked": "Notificaciones bloqueadas — activa en la configuración del navegador"
   },
+  "migration": {
+    "banner": "Tienes datos locales — súbelos a la nube para tu hogar.",
+    "uploadButton": "Subir ahora",
+    "uploading": "Subiendo…",
+    "dismiss": "Ahora no",
+    "success": "{count} registros subidos correctamente.",
+    "error": "Error al subir: {error}"
+  },
   "auth": {
     "signIn": "Iniciar sesión",
     "signUp": "Crear cuenta",

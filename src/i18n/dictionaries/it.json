@@ -219,6 +219,14 @@
     "disable": "Disattiva notifiche",
     "blocked": "Notifiche bloccate — abilita nelle impostazioni del browser"
   },
+  "migration": {
+    "banner": "Hai dati locali — caricali nel cloud per il tuo nucleo familiare.",
+    "uploadButton": "Carica ora",
+    "uploading": "Caricamento…",
+    "dismiss": "Non ora",
+    "success": "{count} record caricati con successo.",
+    "error": "Caricamento fallito: {error}"
+  },
   "auth": {
     "signIn": "Accedi",
     "signUp": "Crea account",

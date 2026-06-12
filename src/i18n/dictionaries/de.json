@@ -219,6 +219,14 @@
     "disable": "Benachrichtigungen deaktivieren",
     "blocked": "Benachrichtigungen blockiert — in den Browsereinstellungen aktivieren"
   },
+  "migration": {
+    "banner": "Du hast lokale Daten — lade sie in die Cloud für deinen Haushalt hoch.",
+    "uploadButton": "Jetzt hochladen",
+    "uploading": "Hochladen…",
+    "dismiss": "Nicht jetzt",
+    "success": "{count} Einträge erfolgreich hochgeladen.",
+    "error": "Upload fehlgeschlagen: {error}"
+  },
   "auth": {
     "signIn": "Anmelden",
     "signUp": "Konto erstellen",
