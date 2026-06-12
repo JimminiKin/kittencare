@@ -1,43 +1,25 @@
 "use client";
 
 import { useEffect } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Bell, BellOff, Plus, RefreshCw } from "lucide-react";
+import { Plus, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AlertBanner } from "@/components/shared/alert-banner";
 import { DashboardCard } from "./dashboard-card";
 import { useCareStore } from "@/stores/care.store";
 import { useKittenStore } from "@/stores/kitten.store";
-import { useNotificationStore } from "@/stores/notification.store";
-import {
-  isNotificationSupported,
-  requestNotificationPermission,
-  getNotificationPermission,
-} from "@/lib/notifications";
 import { useTranslations } from "@/i18n/context";
 
+const BellToggle = dynamic(
+  () => import("./bell-toggle").then((m) => m.BellToggle),
+  { ssr: false }
+);
+
 export function DashboardView() {
-  const { summaries, alerts, refreshSummaries, refreshAlerts } = useCareStore();
+  const { summaries, refreshSummaries, refreshAlerts } = useCareStore();
   const { loading } = useKittenStore();
-  const { enabled: notifEnabled, setEnabled: setNotifEnabled } = useNotificationStore();
   const t = useTranslations("dashboard");
-  const tn = useTranslations("notifications");
-
-  const notifActive = notifEnabled && getNotificationPermission() === "granted";
-
-  const handleBellToggle = async () => {
-    if (notifEnabled) {
-      setNotifEnabled(false);
-      return;
-    }
-    const perm = getNotificationPermission();
-    if (perm === "granted") {
-      setNotifEnabled(true);
-      return;
-    }
-    const result = await requestNotificationPermission();
-    if (result === "granted") setNotifEnabled(true);
-  };
 
   useEffect(() => {
     refreshSummaries();
@@ -59,24 +41,7 @@ export function DashboardView() {
           </h2>
         </div>
         <div className="flex gap-2">
-          {isNotificationSupported() && (
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={handleBellToggle}
-              title={
-                notifActive
-                  ? tn("disable")
-                  : getNotificationPermission() === "denied"
-                  ? tn("blocked")
-                  : tn("enable")
-              }
-            >
-              {notifActive
-                ? <Bell className="h-4 w-4" />
-                : <BellOff className="h-4 w-4 text-muted-foreground" />}
-            </Button>
-          )}
+          <BellToggle />
           <Button
             variant="ghost"
             size="icon-sm"
