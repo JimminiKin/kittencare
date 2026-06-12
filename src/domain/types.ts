@@ -1,6 +1,7 @@
 export type KittenStatus = "active" | "adopted" | "transferred" | "deceased";
 export type KittenSex = "male" | "female" | "unknown";
 export type FeedingMethod = "bottle" | "syringe" | "tube";
+export type FoodType = "formula" | "wet" | "solid";
 export type PooConsistency = "liquid" | "soft" | "normal" | "firm" | "hard";
 export type EnergyLevel = "normal" | "low" | "lethargic";
 export type HydrationLevel = "normal" | "mild-concern" | "concerning";
@@ -24,10 +25,12 @@ export interface Feeding {
   id: string;
   kittenId: string;
   timestamp: Date;
-  method: FeedingMethod;
+  foodType?: FoodType;          // undefined → treat as "formula" (backward compat)
+  method?: FeedingMethod;       // formula only
   formulaType?: string;
   amountOfferedMl?: number;
-  amountConsumedMl: number;
+  amountConsumedMl?: number;    // formula only
+  amountConsumedGrams?: number; // wet / solid
   notes?: string;
 }
 

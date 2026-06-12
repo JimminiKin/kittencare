@@ -24,10 +24,12 @@ export const FeedingSchema = z.object({
   id: z.string(),
   kittenId: z.string(),
   timestamp: z.date(),
-  method: z.enum(["bottle", "syringe", "tube"]),
+  foodType: z.enum(["formula", "wet", "solid"]).optional(),
+  method: z.enum(["bottle", "syringe", "tube"]).optional(),
   formulaType: z.string().optional(),
   amountOfferedMl: z.number().min(0).optional(),
-  amountConsumedMl: z.number().min(0),
+  amountConsumedMl: z.number().min(0).optional(),
+  amountConsumedGrams: z.number().min(0).optional(),
   notes: z.string().max(500).optional(),
 });
 

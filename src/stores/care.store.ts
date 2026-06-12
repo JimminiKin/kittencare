@@ -40,14 +40,17 @@ interface CareStore {
 
   // Feed
   addFeeding(input: CreateFeedingInput): Promise<Feeding>;
+  updateFeeding(id: string, partial: Partial<Omit<Feeding, "id">>): Promise<void>;
   deleteFeeding(id: string): Promise<void>;
 
   // Weight
   addWeight(input: CreateWeightEntryInput): Promise<WeightEntry>;
+  updateWeight(id: string, partial: Partial<Omit<WeightEntry, "id">>): Promise<void>;
   deleteWeight(id: string): Promise<void>;
 
   // Elimination
   addElimination(input: CreateEliminationEntryInput): Promise<EliminationEntry>;
+  updateElimination(id: string, partial: Partial<Omit<EliminationEntry, "id">>): Promise<void>;
   deleteElimination(id: string): Promise<void>;
 
   // Medication
@@ -55,9 +58,12 @@ interface CareStore {
   updateMedication(id: string, partial: Partial<Omit<Medication, "id">>): Promise<void>;
   deleteMedication(id: string): Promise<void>;
   administerMedication(input: CreateMedicationAdministrationInput): Promise<MedicationAdministration>;
+  deleteAdministration(id: string): Promise<void>;
 
   // Health
   addHealthObservation(input: CreateHealthObservationInput): Promise<HealthObservation>;
+  updateHealthObservation(id: string, partial: Partial<Omit<HealthObservation, "id">>): Promise<void>;
+  deleteHealthObservation(id: string): Promise<void>;
 }
 
 export const useCareStore = create<CareStore>((set, get) => ({
@@ -121,6 +127,11 @@ export const useCareStore = create<CareStore>((set, get) => ({
     return feeding;
   },
 
+  updateFeeding: async (id, partial) => {
+    await getRepositories().feedings.update(id, partial);
+    set((s) => ({ feedings: s.feedings.map((f) => (f.id === id ? { ...f, ...partial } : f)) }));
+  },
+
   deleteFeeding: async (id) => {
     await getRepositories().feedings.delete(id);
     set((s) => ({ feedings: s.feedings.filter((f) => f.id !== id) }));
@@ -133,6 +144,11 @@ export const useCareStore = create<CareStore>((set, get) => ({
     return entry;
   },
 
+  updateWeight: async (id, partial) => {
+    await getRepositories().weights.update(id, partial);
+    set((s) => ({ weights: s.weights.map((w) => (w.id === id ? { ...w, ...partial } : w)) }));
+  },
+
   deleteWeight: async (id) => {
     await getRepositories().weights.delete(id);
     set((s) => ({ weights: s.weights.filter((w) => w.id !== id) }));
@@ -143,6 +159,11 @@ export const useCareStore = create<CareStore>((set, get) => ({
     await getRepositories().eliminations.create(entry);
     set((s) => ({ eliminations: [entry, ...s.eliminations] }));
     return entry;
+  },
+
+  updateElimination: async (id, partial) => {
+    await getRepositories().eliminations.update(id, partial);
+    set((s) => ({ eliminations: s.eliminations.map((e) => (e.id === id ? { ...e, ...partial } : e)) }));
   },
 
   deleteElimination: async (id) => {
@@ -176,10 +197,25 @@ export const useCareStore = create<CareStore>((set, get) => ({
     return admin;
   },
 
+  deleteAdministration: async (id) => {
+    await getRepositories().administrations.delete(id);
+    set((s) => ({ administrations: s.administrations.filter((a) => a.id !== id) }));
+  },
+
   addHealthObservation: async (input) => {
     const obs: HealthObservation = { ...input, id: uuid() };
     await getRepositories().health.create(obs);
     set((s) => ({ healthObservations: [obs, ...s.healthObservations] }));
     return obs;
+  },
+
+  updateHealthObservation: async (id, partial) => {
+    await getRepositories().health.update(id, partial);
+    set((s) => ({ healthObservations: s.healthObservations.map((h) => (h.id === id ? { ...h, ...partial } : h)) }));
+  },
+
+  deleteHealthObservation: async (id) => {
+    await getRepositories().health.delete(id);
+    set((s) => ({ healthObservations: s.healthObservations.filter((h) => h.id !== id) }));
   },
 }));

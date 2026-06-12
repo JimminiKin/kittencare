@@ -91,10 +91,11 @@ export async function computeAlertsForKitten(
     subHours(new Date(), 168)
   );
 
+  const isFormula = (f: { foodType?: string }) => !f.foodType || f.foodType === "formula";
   if (weekFeedings.length > 0) {
-    const weekTotal = weekFeedings.reduce((s, f) => s + f.amountConsumedMl, 0);
+    const weekTotal = weekFeedings.filter(isFormula).reduce((s, f) => s + (f.amountConsumedMl ?? 0), 0);
     const weekDailyAvg = weekTotal / 7;
-    const todayTotal = todayFeedings.reduce((s, f) => s + f.amountConsumedMl, 0);
+    const todayTotal = todayFeedings.filter(isFormula).reduce((s, f) => s + (f.amountConsumedMl ?? 0), 0);
 
     if (weekDailyAvg > 0 && todayTotal < weekDailyAvg * 0.6) {
       alerts.push({
@@ -173,10 +174,9 @@ export async function buildKittenSummary(
         ? latestWeight.weightGrams - prevWeight.weightGrams
         : undefined,
     feedingsToday: todayFeedings.length,
-    totalConsumedMlToday: todayFeedings.reduce(
-      (s, f) => s + f.amountConsumedMl,
-      0
-    ),
+    totalConsumedMlToday: todayFeedings
+      .filter((f) => !f.foodType || f.foodType === "formula")
+      .reduce((s, f) => s + (f.amountConsumedMl ?? 0), 0),
     eliminationsToday: todayEliminations.length,
     activeMedications: activeMeds.length,
     alerts,

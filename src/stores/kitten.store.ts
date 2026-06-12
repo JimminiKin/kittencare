@@ -71,7 +71,24 @@ export const useKittenStore = create<KittenStore>((set, get) => ({
   },
 
   deleteKitten: async (id) => {
-    await getRepositories().kittens.delete(id);
+    const repos = getRepositories();
+    const [feedings, weights, eliminations, medications, health, administrations] = await Promise.all([
+      repos.feedings.getByKitten(id),
+      repos.weights.getByKitten(id),
+      repos.eliminations.getByKitten(id),
+      repos.medications.getByKitten(id),
+      repos.health.getByKitten(id),
+      repos.administrations.getByKittenSince(id, new Date(0)),
+    ]);
+    await Promise.all([
+      ...feedings.map((f) => repos.feedings.delete(f.id)),
+      ...weights.map((w) => repos.weights.delete(w.id)),
+      ...eliminations.map((e) => repos.eliminations.delete(e.id)),
+      ...medications.map((m) => repos.medications.delete(m.id)),
+      ...health.map((h) => repos.health.delete(h.id)),
+      ...administrations.map((a) => repos.administrations.delete(a.id)),
+    ]);
+    await repos.kittens.delete(id);
     set((s) => ({ kittens: s.kittens.filter((k) => k.id !== id) }));
   },
 

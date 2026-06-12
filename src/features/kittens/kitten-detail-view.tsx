@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { format } from "date-fns";
-import { Scale, Droplets, Pill, Activity, Edit, Archive } from "lucide-react";
+import { Scale, Droplets, Pill, Activity, Edit, Archive, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +14,13 @@ import { KittenAvatar } from "@/components/shared/kitten-avatar";
 import { AlertBanner } from "@/components/shared/alert-banner";
 import { WeightChart } from "@/components/charts/weight-chart";
 import { FeedingChart } from "@/components/charts/feeding-chart";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
+import {
+  FeedingEditDialog,
+  WeightEditDialog,
+  EliminationEditDialog,
+  HealthEditDialog,
+} from "@/components/shared/event-edit-dialogs";
 import { useKittenStore } from "@/stores/kitten.store";
 import { useCareStore } from "@/stores/care.store";
 import { buildKittenSummary } from "@/services/alert.service";
@@ -20,19 +28,33 @@ import { getRepositories } from "@/db/index";
 import { formatWeight, formatWeightChange } from "@/lib/utils";
 import { useFormatAge } from "@/lib/use-format-age";
 import { useTranslations } from "@/i18n/context";
-import type { KittenSummary } from "@/domain/types";
+import type {
+  KittenSummary,
+  Feeding,
+  WeightEntry,
+  EliminationEntry,
+  MedicationAdministration,
+  HealthObservation,
+} from "@/domain/types";
+
+type TimelineEvent =
+  | { id: string; timestamp: Date; type: "feeding"; label: string; data: Feeding }
+  | { id: string; timestamp: Date; type: "weight"; label: string; data: WeightEntry }
+  | { id: string; timestamp: Date; type: "elimination"; label: string; data: EliminationEntry }
+  | { id: string; timestamp: Date; type: "medication"; label: string; data: MedicationAdministration }
+  | { id: string; timestamp: Date; type: "health"; label: string; data: HealthObservation };
 
 interface KittenDetailViewProps {
   kittenId: string;
 }
 
 export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
-  const { getKittenById, archiveKitten } = useKittenStore();
+  const router = useRouter();
+  const { getKittenById, archiveKitten, deleteKitten } = useKittenStore();
   const {
     feedings,
     weights,
     eliminations,
-    medications,
     administrations,
     healthObservations,
     loadFeedingsForKitten,
@@ -40,12 +62,22 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
     loadEliminationsForKitten,
     loadMedicationsForKitten,
     loadHealthForKitten,
+    deleteFeeding,
+    deleteWeight,
+    deleteElimination,
+    deleteAdministration,
+    deleteHealthObservation,
   } = useCareStore();
 
   const [summary, setSummary] = useState<KittenSummary | null>(null);
+  const [editTarget, setEditTarget] = useState<TimelineEvent | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<TimelineEvent | null>(null);
+  const [deletingKitten, setDeletingKitten] = useState(false);
+
   const t = useTranslations("detail");
   const tk = useTranslations("kitten");
   const tc = useTranslations("common");
+  const tz = useTranslations("dangerZone");
   const formatAge = useFormatAge();
 
   const kitten = getKittenById(kittenId);
@@ -72,45 +104,73 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
     );
   }
 
-  type TimelineEvent = { id: string; timestamp: Date; type: string; label: string };
   const timeline: TimelineEvent[] = [
-    ...feedings.slice(0, 10).map((f) => ({
-      id: f.id,
-      timestamp: f.timestamp,
-      type: "feeding",
-      label: `🍼 ${t("eventFeeding", { amount: f.amountConsumedMl, method: f.method })}`,
-    })),
+    ...feedings.slice(0, 10).map((f) => {
+      const isFormula = !f.foodType || f.foodType === "formula";
+      return {
+        id: f.id,
+        timestamp: f.timestamp,
+        type: "feeding" as const,
+        label: isFormula
+          ? `🍼 ${t("eventFeeding", { amount: f.amountConsumedMl ?? 0, method: f.method ?? "" })}`
+          : f.foodType === "wet"
+          ? `🥫 ${t("eventFeedingWet", { amount: f.amountConsumedGrams ?? 0 })}`
+          : `🌾 ${t("eventFeedingSolid", { amount: f.amountConsumedGrams ?? 0 })}`,
+        data: f,
+      };
+    }),
     ...weights.slice(0, 5).map((w) => ({
       id: w.id,
       timestamp: w.timestamp,
-      type: "weight",
+      type: "weight" as const,
       label: `⚖️ ${t("eventWeight", { weight: formatWeight(w.weightGrams) })}`,
+      data: w,
     })),
     ...eliminations.slice(0, 5).map((e) => ({
       id: e.id,
       timestamp: e.timestamp,
-      type: "elimination",
+      type: "elimination" as const,
       label: e.pee && e.poo
         ? `💧💩 ${t("eventPeeAndPoo")}`
         : e.pee
         ? `💧 ${t("eventPee")}`
         : `💩 ${t("eventPoo")}`,
+      data: e,
     })),
     ...administrations.slice(0, 5).map((a) => ({
       id: a.id,
       timestamp: a.timestamp,
-      type: "medication",
+      type: "medication" as const,
       label: `💊 ${t("eventMedication")}`,
+      data: a,
     })),
     ...healthObservations.slice(0, 5).map((h) => ({
       id: h.id,
       timestamp: h.timestamp,
-      type: "health",
+      type: "health" as const,
       label: `🩺 ${t("eventHealth", { energy: h.energy, hydration: h.hydration })}`,
+      data: h,
     })),
   ]
     .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
     .slice(0, 20);
+
+  const handleDeleteEvent = async () => {
+    if (!deleteTarget) return;
+    switch (deleteTarget.type) {
+      case "feeding": await deleteFeeding(deleteTarget.id); break;
+      case "weight": await deleteWeight(deleteTarget.id); break;
+      case "elimination": await deleteElimination(deleteTarget.id); break;
+      case "medication": await deleteAdministration(deleteTarget.id); break;
+      case "health": await deleteHealthObservation(deleteTarget.id); break;
+    }
+    setDeleteTarget(null);
+  };
+
+  const handleDeleteKitten = async () => {
+    await deleteKitten(kitten.id);
+    router.push("/kittens");
+  };
 
   return (
     <div className="space-y-4">
@@ -192,7 +252,27 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
                     {format(event.timestamp, "h:mm a")}
                   </span>
                   <div className="h-2 w-2 rounded-full bg-primary shrink-0" />
-                  <span className="text-sm">{event.label}</span>
+                  <span className="text-sm flex-1">{event.label}</span>
+                  <div className="flex items-center gap-0.5 shrink-0">
+                    {event.type !== "medication" && (
+                      <button
+                        type="button"
+                        onClick={() => setEditTarget(event)}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                        aria-label={tc("edit")}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setDeleteTarget(event)}
+                      className="p-1.5 rounded-lg text-muted-foreground hover:text-red-500 hover:bg-red-50 transition-colors"
+                      aria-label={tc("delete")}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                 </div>
                 {i < timeline.length - 1 && <Separator />}
               </div>
@@ -257,6 +337,62 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
           </div>
         </div>
       )}
+
+      <div className="pt-4 border-t">
+        <p className="text-xs text-muted-foreground mb-3">{tz("deleteKittenPrompt")}</p>
+        <Button
+          variant="destructive"
+          className="w-full"
+          onClick={() => setDeletingKitten(true)}
+        >
+          <Trash2 className="h-4 w-4 mr-2" />
+          {tz("deleteKittenButton")}
+        </Button>
+      </div>
+
+      {/* Edit dialogs */}
+      <FeedingEditDialog
+        feeding={editTarget?.type === "feeding" ? editTarget.data : null}
+        open={editTarget?.type === "feeding"}
+        onClose={() => setEditTarget(null)}
+      />
+      <WeightEditDialog
+        entry={editTarget?.type === "weight" ? editTarget.data : null}
+        open={editTarget?.type === "weight"}
+        onClose={() => setEditTarget(null)}
+      />
+      <EliminationEditDialog
+        entry={editTarget?.type === "elimination" ? editTarget.data : null}
+        open={editTarget?.type === "elimination"}
+        onClose={() => setEditTarget(null)}
+      />
+      <HealthEditDialog
+        observation={editTarget?.type === "health" ? editTarget.data : null}
+        open={editTarget?.type === "health"}
+        onClose={() => setEditTarget(null)}
+      />
+
+      {/* Delete event confirm */}
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDeleteEvent}
+        title={tz("deleteEventTitle")}
+        body={tz("deleteEventBody")}
+        confirmLabel={tc("delete")}
+        danger
+      />
+
+      {/* Delete kitten confirm */}
+      <ConfirmDialog
+        open={deletingKitten}
+        onClose={() => setDeletingKitten(false)}
+        onConfirm={handleDeleteKitten}
+        title={tz("deleteKittenTitle", { name: kitten.name })}
+        body={tz("deleteKittenBody", { name: kitten.name })}
+        confirmLabel={tz("deleteKittenConfirm")}
+        danger
+      />
     </div>
   );
 }

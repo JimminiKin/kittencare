@@ -18,7 +18,7 @@ import { PastTimePicker } from "@/components/shared/past-time-picker";
 import { useKittenStore } from "@/stores/kitten.store";
 import { useCareStore } from "@/stores/care.store";
 import { useTranslations } from "@/i18n/context";
-import type { FeedingMethod } from "@/domain/types";
+import type { FeedingMethod, FoodType } from "@/domain/types";
 import { cn } from "@/lib/utils";
 
 interface QuickFeedViewProps {
@@ -35,7 +35,9 @@ export function QuickFeedView({ defaultKittenId }: QuickFeedViewProps) {
   const activeKittens = kittens.filter((k) => k.status === "active");
 
   const [kittenId, setKittenId] = useState(defaultKittenId ?? activeKittens[0]?.id ?? "");
+  const [foodType, setFoodType] = useState<FoodType>("formula");
   const [amountMl, setAmountMl] = useState(8);
+  const [amountGrams, setAmountGrams] = useState(10);
   const [method, setMethod] = useState<FeedingMethod>("bottle");
   const [pee, setPee] = useState(false);
   const [poo, setPoo] = useState(false);
@@ -43,6 +45,12 @@ export function QuickFeedView({ defaultKittenId }: QuickFeedViewProps) {
   const [timestamp, setTimestamp] = useState<Date>(new Date());
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  const FOOD_TYPES: { value: FoodType; label: string; emoji: string }[] = [
+    { value: "formula", label: t("formula"), emoji: "🍼" },
+    { value: "wet", label: t("wet"), emoji: "🥫" },
+    { value: "solid", label: t("solid"), emoji: "🌾" },
+  ];
 
   const METHODS: { value: FeedingMethod; label: string; emoji: string }[] = [
     { value: "bottle", label: t("bottle"), emoji: "🍼" },
@@ -67,8 +75,10 @@ export function QuickFeedView({ defaultKittenId }: QuickFeedViewProps) {
       await addFeeding({
         kittenId,
         timestamp,
-        method,
-        amountConsumedMl: amountMl,
+        foodType,
+        ...(foodType === "formula"
+          ? { method, amountConsumedMl: amountMl }
+          : { amountConsumedGrams: amountGrams }),
       });
       if (pee || poo) {
         await addElimination({
@@ -117,42 +127,78 @@ export function QuickFeedView({ defaultKittenId }: QuickFeedViewProps) {
         </div>
       )}
 
-      <div className="space-y-3">
-        <Label className="text-base font-semibold">{t("amountConsumed")}</Label>
-        <div className="flex justify-center">
-          <NumericStepper
-            value={amountMl}
-            onChange={setAmountMl}
-            min={0}
-            max={50}
-            step={1}
-            unit="ml"
-            size="lg"
-          />
-        </div>
-      </div>
-
       <div className="space-y-2">
-        <Label className="text-base font-semibold">{t("method")}</Label>
+        <Label className="text-base font-semibold">{t("foodType")}</Label>
         <div className="grid grid-cols-3 gap-2">
-          {METHODS.map((m) => (
+          {FOOD_TYPES.map((ft) => (
             <button
-              key={m.value}
+              key={ft.value}
               type="button"
-              onClick={() => setMethod(m.value)}
+              onClick={() => setFoodType(ft.value)}
               className={cn(
                 "flex flex-col items-center gap-1 rounded-2xl border-2 p-4 text-sm font-medium transition-all",
-                method === m.value
+                foodType === ft.value
                   ? "border-primary bg-primary/10 text-primary"
                   : "border-border bg-background text-muted-foreground"
               )}
             >
-              <span className="text-2xl">{m.emoji}</span>
-              {m.label}
+              <span className="text-2xl">{ft.emoji}</span>
+              {ft.label}
             </button>
           ))}
         </div>
       </div>
+
+      <div className="space-y-3">
+        <Label className="text-base font-semibold">{t("amountConsumed")}</Label>
+        <div className="flex justify-center">
+          {foodType === "formula" ? (
+            <NumericStepper
+              value={amountMl}
+              onChange={setAmountMl}
+              min={0}
+              max={50}
+              step={1}
+              unit="ml"
+              size="lg"
+            />
+          ) : (
+            <NumericStepper
+              value={amountGrams}
+              onChange={setAmountGrams}
+              min={0}
+              max={200}
+              step={1}
+              unit="g"
+              size="lg"
+            />
+          )}
+        </div>
+      </div>
+
+      {foodType === "formula" && (
+        <div className="space-y-2">
+          <Label className="text-base font-semibold">{t("method")}</Label>
+          <div className="grid grid-cols-3 gap-2">
+            {METHODS.map((m) => (
+              <button
+                key={m.value}
+                type="button"
+                onClick={() => setMethod(m.value)}
+                className={cn(
+                  "flex flex-col items-center gap-1 rounded-2xl border-2 p-4 text-sm font-medium transition-all",
+                  method === m.value
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border bg-background text-muted-foreground"
+                )}
+              >
+                <span className="text-2xl">{m.emoji}</span>
+                {m.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="space-y-2">
         <Label className="text-base font-semibold">{t("elimination")}</Label>

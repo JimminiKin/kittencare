@@ -31,7 +31,7 @@ export function FeedingChart({ feedings, days = 7 }: FeedingChartProps) {
     if (f.timestamp >= cutoff) {
       const key = format(startOfDay(f.timestamp), "MMM d");
       if (key in buckets) {
-        buckets[key] += f.amountConsumedMl;
+        buckets[key] += f.amountConsumedMl ?? 0;
       }
     }
   }
