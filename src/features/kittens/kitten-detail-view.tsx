@@ -23,6 +23,7 @@ import {
 } from "@/components/shared/event-edit-dialogs";
 import { useKittenStore } from "@/stores/kitten.store";
 import { useCareStore } from "@/stores/care.store";
+import { useProfiles } from "@/hooks/use-profiles";
 import { buildKittenSummary } from "@/services/alert.service";
 import { getRepositories } from "@/db/index";
 import { formatWeight, formatWeightChange } from "@/lib/utils";
@@ -79,6 +80,7 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
   const tc = useTranslations("common");
   const tz = useTranslations("dangerZone");
   const formatAge = useFormatAge();
+  const profiles = useProfiles();
 
   const kitten = getKittenById(kittenId);
 
@@ -255,7 +257,14 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
                     {format(event.timestamp, "h:mm a")}
                   </span>
                   <div className="h-2 w-2 rounded-full bg-primary shrink-0" />
-                  <span className="text-sm flex-1">{event.label}</span>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm">{event.label}</span>
+                    {(event.data as any).recordedBy && profiles.get((event.data as any).recordedBy) && (
+                      <span className="text-xs text-muted-foreground ml-1.5">
+                        · {profiles.get((event.data as any).recordedBy)}
+                      </span>
+                    )}
+                  </div>
                   <div className="flex items-center gap-0.5 shrink-0">
                     {event.type !== "medication" && (
                       <button

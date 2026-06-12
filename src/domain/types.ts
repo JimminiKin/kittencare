@@ -32,6 +32,7 @@ export interface Feeding {
   amountConsumedMl?: number;    // formula only
   amountConsumedGrams?: number; // wet / solid
   notes?: string;
+  recordedBy?: string;          // userId, populated by cloud repo
 }
 
 export interface WeightEntry {
@@ -39,6 +40,7 @@ export interface WeightEntry {
   kittenId: string;
   timestamp: Date;
   weightGrams: number;
+  recordedBy?: string;
 }
 
 export interface EliminationEntry {
@@ -50,6 +52,7 @@ export interface EliminationEntry {
   pooConsistency?: PooConsistency;
   pooColor?: string;
   notes?: string;
+  recordedBy?: string;
 }
 
 export interface Medication {
@@ -68,6 +71,7 @@ export interface MedicationAdministration {
   medicationId: string;
   kittenId: string;
   timestamp: Date;
+  recordedBy?: string;
 }
 
 export interface HealthObservation {
@@ -79,6 +83,7 @@ export interface HealthObservation {
   appetite: AppetiteLevel;
   temperature?: number;
   notes?: string;
+  recordedBy?: string;
 }
 
 // ── Alert types ──────────────────────────────────────────────────────────────
