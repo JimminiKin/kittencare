@@ -31,7 +31,7 @@
     "deleteEventBody": "Diese Aktion kann nicht rückgängig gemacht werden."
   },
   "dashboard": {
-    "title": "KittenCare",
+    "title": "Easy Kitty Care",
     "subtitle": "Pflegekatzen-Tracker",
     "activeOne": "{count} aktives Kätzchen",
     "activeMany": "{count} aktive Kätzchen",

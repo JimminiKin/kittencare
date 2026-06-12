@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <g transform="translate(414 498)">
+    <path fill="#f6a9be" d="M98 430c-112-82-459-305-459-582 0-140 107-251 242-251 100 0 175 56 217 111 42-55 117-111 217-111 135 0 242 111 242 251 0 277-347 500-459 582"/>
+    <path fill="#fff" stroke="#34425c" stroke-linecap="round" stroke-linejoin="round" stroke-width="18" d="M98-141q33 0 60-10c38-30 114-80 144-96q29-13 32 12c8 52 18 136 22 184 30 52 46 112 42 170-10 124-106 242-300 242s-290-118-300-242c-4-58 12-118 42-170 4-48 14-132 22-184q5-25 32-12c30 16 106 66 144 96q27 10 60 10"/>
+    <path fill="#f6a9be" d="M-108-205c-6-8-13-4-13 6l-5 112c0 12 9 16 18 11l80-47q14-10 0-22c-24-20-58-47-80-60m412 0c6-8 13-4 13 6l5 112c0 12-9 16-18 11l-80-47q-14-10 0-22c24-20 58-47 80-60"/>
+    <path fill="none" stroke="#34425c" stroke-linecap="round" stroke-width="18" d="M-76 51q48-52 96 0m156 0q48-52 96 0"/>
+    <path fill="#f6a9be" d="M98 129c-14-14-38-29-38-46 0-14 11-21 21-21q13 1 17 13 4-12 17-13c10 0 21 7 21 21 0 17-24 32-38 46"/>
+    <path fill="none" stroke="#34425c" stroke-linecap="round" stroke-width="18" d="M32 147q35 30 66 10 33 20 66-10"/>
+    <ellipse cx="-29.5" cy="278.1" fill="#fff" stroke="#34425c" stroke-width="18" rx="108" ry="102"/>
+    <ellipse cx="226.5" cy="278.1" fill="#fff" stroke="#34425c" stroke-width="18" rx="108" ry="102"/>
+    <path fill="none" stroke="#34425c" stroke-linecap="round" stroke-width="16" d="M-54 315q-3 22 2 40m46-40q4 22-2 40m210-40q-4 22 2 40m46-40q4 22-2 40"/>
+  </g>
+</svg>

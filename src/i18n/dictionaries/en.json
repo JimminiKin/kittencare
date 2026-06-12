@@ -31,7 +31,7 @@
     "deleteEventBody": "This action cannot be undone."
   },
   "dashboard": {
-    "title": "KittenCare",
+    "title": "Easy Kitty Care",
     "subtitle": "Foster care tracker",
     "activeOne": "{count} active kitten",
     "activeMany": "{count} active kittens",

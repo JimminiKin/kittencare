@@ -62,7 +62,7 @@ export async function fireAlertNotifications(alerts: Alert[]): Promise<void> {
 
     new Notification(alert.kittenName, {
       body,
-      icon: "/icon-192.png",
+      icon: "/icon.svg",
       tag: key,
     });
 

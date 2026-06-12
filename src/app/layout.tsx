@@ -3,13 +3,17 @@ import "./globals.css";
 import { AppShell } from "@/components/layout/app-shell";
 
 export const metadata: Metadata = {
-  title: "KittenCare",
-  description: "Track health and care for neonatal foster kittens",
+  title: "Easy Kitty Care",
+  description: "Track health and care for foster kittens",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/apple-touch-icon.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "KittenCare",
+    title: "Easy Kitty Care",
   },
 };
 

@@ -31,7 +31,7 @@
     "deleteEventBody": "Esta ação não pode ser desfeita."
   },
   "dashboard": {
-    "title": "KittenCare",
+    "title": "Easy Kitty Care",
     "subtitle": "Rastreador de gatinhos em acolhimento",
     "activeOne": "{count} gatinho ativo",
     "activeMany": "{count} gatinhos ativos",

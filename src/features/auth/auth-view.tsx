@@ -66,7 +66,7 @@ export function AuthView() {
     <div className="flex flex-col items-center justify-center min-h-[70vh] gap-8">
       <div className="text-center">
         <div className="text-5xl mb-2">🐱</div>
-        <h1 className="text-2xl font-bold">KittenCare</h1>
+        <h1 className="text-2xl font-bold">Easy Kitty Care</h1>
       </div>
 
       <div className="w-full max-w-sm">

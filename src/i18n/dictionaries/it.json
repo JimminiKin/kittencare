@@ -31,7 +31,7 @@
     "deleteEventBody": "L'operazione è irreversibile."
   },
   "dashboard": {
-    "title": "KittenCare",
+    "title": "Easy Kitty Care",
     "subtitle": "Monitoraggio gattini in affido",
     "activeOne": "{count} gattino attivo",
     "activeMany": "{count} gattini attivi",

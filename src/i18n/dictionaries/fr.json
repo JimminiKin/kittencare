@@ -31,7 +31,7 @@
     "deleteEventBody": "Cette action est irréversible."
   },
   "dashboard": {
-    "title": "KittenCare",
+    "title": "Easy Kitty Care",
     "subtitle": "Suivi des chatons en famille d'accueil",
     "activeOne": "{count} chaton actif",
     "activeMany": "{count} chatons actifs",
