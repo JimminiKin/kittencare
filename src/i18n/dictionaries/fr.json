@@ -19,7 +19,8 @@
     "off": "Désactivé",
     "given": "Donné",
     "optional": "optionnel",
-    "nowLabel": "Maintenant"
+    "nowLabel": "Maintenant",
+    "you": "vous"
   },
   "dangerZone": {
     "deleteKittenTitle": "Supprimer {name} définitivement ?",
@@ -252,6 +253,40 @@
     "signInToSync": "Se connecter pour synchroniser",
     "householdReady": "Foyer créé — invitez des membres dans une prochaine mise à jour.",
     "syncComingSoon": "Synchronisation cloud à venir."
+  },
+  "household": {
+    "title": "Foyer",
+    "members": "Membres",
+    "invite": "Inviter quelqu'un",
+    "inviteEmailPlaceholder": "email@exemple.com (optionnel)",
+    "generateLink": "Copier le lien d'invitation",
+    "generating": "Génération…",
+    "linkCopied": "Lien copié !",
+    "pendingInvites": "Invitations en attente",
+    "inviteExpires": "Expire le {date}",
+    "revoke": "Révoquer",
+    "remove": "Retirer",
+    "makeOwner": "Rendre propriétaire",
+    "leave": "Quitter le foyer",
+    "ownerMustTransfer": "Transférez la propriété avant de quitter.",
+    "leaveTitle": "Quitter le foyer ?",
+    "leaveBody": "Vous perdrez l'accès à toutes les données de ce foyer.",
+    "transferTitle": "Rendre {name} propriétaire ?",
+    "transferBody": "Vous deviendrez un membre ordinaire et perdrez les privilèges de propriétaire.",
+    "removeTitle": "Retirer {name} ?",
+    "removeBody": "{name} perdra l'accès à ce foyer.",
+    "revokeTitle": "Révoquer cette invitation ?",
+    "revokeBody": "Le lien d'invitation ne fonctionnera plus."
+  },
+  "invite": {
+    "invitedBy": "{name} vous invite dans",
+    "accept": "Rejoindre {household}",
+    "accepting": "Rejoindre…",
+    "signInFirst": "Connectez-vous pour accepter cette invitation.",
+    "signInButton": "Se connecter pour accepter",
+    "joined": "Vous avez rejoint {household} !",
+    "notFound": "Ce lien d'invitation est invalide ou a expiré.",
+    "alreadyAccepted": "Cette invitation a déjà été utilisée."
   },
   "language": {
     "label": "Langue",

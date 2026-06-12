@@ -19,7 +19,8 @@
     "off": "Disattivo",
     "given": "Dato",
     "optional": "opzionale",
-    "nowLabel": "Adesso"
+    "nowLabel": "Adesso",
+    "you": "tu"
   },
   "dangerZone": {
     "deleteKittenTitle": "Eliminare {name} definitivamente?",
@@ -252,6 +253,40 @@
     "signInToSync": "Accedi per sincronizzare",
     "householdReady": "Nucleo creato — invita i membri in un prossimo aggiornamento.",
     "syncComingSoon": "Sincronizzazione cloud in arrivo."
+  },
+  "household": {
+    "title": "Nucleo",
+    "members": "Membri",
+    "invite": "Invita qualcuno",
+    "inviteEmailPlaceholder": "email@esempio.com (opzionale)",
+    "generateLink": "Copia link di invito",
+    "generating": "Generazione…",
+    "linkCopied": "Link copiato!",
+    "pendingInvites": "Inviti in sospeso",
+    "inviteExpires": "Scade il {date}",
+    "revoke": "Revoca",
+    "remove": "Rimuovi",
+    "makeOwner": "Rendi proprietario",
+    "leave": "Lascia il nucleo",
+    "ownerMustTransfer": "Trasferisci la proprietà prima di uscire.",
+    "leaveTitle": "Lasciare il nucleo?",
+    "leaveBody": "Perderai l'accesso a tutti i dati di questo nucleo.",
+    "transferTitle": "Rendere {name} proprietario?",
+    "transferBody": "Diventerai un membro normale e perderai i privilegi di proprietario.",
+    "removeTitle": "Rimuovere {name}?",
+    "removeBody": "{name} perderà l'accesso a questo nucleo.",
+    "revokeTitle": "Revocare questo invito?",
+    "revokeBody": "Il link di invito non funzionerà più."
+  },
+  "invite": {
+    "invitedBy": "{name} ti ha invitato in",
+    "accept": "Unisciti a {household}",
+    "accepting": "Unione in corso…",
+    "signInFirst": "Accedi per accettare questo invito.",
+    "signInButton": "Accedi per accettare",
+    "joined": "Ti sei unito a {household}!",
+    "notFound": "Questo link di invito non è valido o è scaduto.",
+    "alreadyAccepted": "Questo invito è già stato utilizzato."
   },
   "language": {
     "label": "Lingua",

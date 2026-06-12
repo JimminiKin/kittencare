@@ -19,7 +19,8 @@
     "off": "Inativo",
     "given": "Dado",
     "optional": "opcional",
-    "nowLabel": "Agora"
+    "nowLabel": "Agora",
+    "you": "você"
   },
   "dangerZone": {
     "deleteKittenTitle": "Excluir {name} permanentemente?",
@@ -252,6 +253,40 @@
     "signInToSync": "Entrar para sincronizar",
     "householdReady": "Casa criada — convide membros numa atualização futura.",
     "syncComingSoon": "Sincronização na nuvem em breve."
+  },
+  "household": {
+    "title": "Casa",
+    "members": "Membros",
+    "invite": "Convidar alguém",
+    "inviteEmailPlaceholder": "email@exemplo.com (opcional)",
+    "generateLink": "Copiar link de convite",
+    "generating": "Gerando…",
+    "linkCopied": "Link copiado!",
+    "pendingInvites": "Convites pendentes",
+    "inviteExpires": "Expira em {date}",
+    "revoke": "Revogar",
+    "remove": "Remover",
+    "makeOwner": "Tornar proprietário",
+    "leave": "Sair da casa",
+    "ownerMustTransfer": "Transfira a propriedade antes de sair.",
+    "leaveTitle": "Sair da casa?",
+    "leaveBody": "Você perderá o acesso a todos os dados desta casa.",
+    "transferTitle": "Tornar {name} proprietário?",
+    "transferBody": "Você se tornará um membro regular e perderá os privilégios de proprietário.",
+    "removeTitle": "Remover {name}?",
+    "removeBody": "{name} perderá o acesso a esta casa.",
+    "revokeTitle": "Revogar este convite?",
+    "revokeBody": "O link de convite não funcionará mais."
+  },
+  "invite": {
+    "invitedBy": "{name} convidou você para",
+    "accept": "Entrar em {household}",
+    "accepting": "Entrando…",
+    "signInFirst": "Entre para aceitar este convite.",
+    "signInButton": "Entrar para aceitar",
+    "joined": "Você entrou em {household}!",
+    "notFound": "Este link de convite é inválido ou expirou.",
+    "alreadyAccepted": "Este convite já foi usado."
   },
   "language": {
     "label": "Idioma",

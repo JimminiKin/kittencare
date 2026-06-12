@@ -19,7 +19,8 @@
     "off": "Aus",
     "given": "Gegeben",
     "optional": "optional",
-    "nowLabel": "Jetzt"
+    "nowLabel": "Jetzt",
+    "you": "du"
   },
   "dangerZone": {
     "deleteKittenTitle": "{name} dauerhaft löschen?",
@@ -252,6 +253,40 @@
     "signInToSync": "Anmelden zum Synchronisieren",
     "householdReady": "Haushalt erstellt — lade Mitglieder in einem zukünftigen Update ein.",
     "syncComingSoon": "Cloud-Synchronisierung demnächst verfügbar."
+  },
+  "household": {
+    "title": "Haushalt",
+    "members": "Mitglieder",
+    "invite": "Jemanden einladen",
+    "inviteEmailPlaceholder": "email@beispiel.de (optional)",
+    "generateLink": "Einladungslink kopieren",
+    "generating": "Generieren…",
+    "linkCopied": "Link kopiert!",
+    "pendingInvites": "Ausstehende Einladungen",
+    "inviteExpires": "Läuft ab am {date}",
+    "revoke": "Widerrufen",
+    "remove": "Entfernen",
+    "makeOwner": "Zum Besitzer machen",
+    "leave": "Haushalt verlassen",
+    "ownerMustTransfer": "Übertrage die Eigentumsrechte, bevor du gehst.",
+    "leaveTitle": "Haushalt verlassen?",
+    "leaveBody": "Du verlierst den Zugriff auf alle Daten dieses Haushalts.",
+    "transferTitle": "{name} zum Besitzer machen?",
+    "transferBody": "Du wirst ein normales Mitglied und verlierst die Besitzerprivilegien.",
+    "removeTitle": "{name} entfernen?",
+    "removeBody": "{name} verliert den Zugriff auf diesen Haushalt.",
+    "revokeTitle": "Diese Einladung widerrufen?",
+    "revokeBody": "Der Einladungslink wird nicht mehr funktionieren."
+  },
+  "invite": {
+    "invitedBy": "{name} lädt dich ein zu",
+    "accept": "{household} beitreten",
+    "accepting": "Beitreten…",
+    "signInFirst": "Melde dich an, um diese Einladung anzunehmen.",
+    "signInButton": "Anmelden zum Beitreten",
+    "joined": "Du bist {household} beigetreten!",
+    "notFound": "Dieser Einladungslink ist ungültig oder abgelaufen.",
+    "alreadyAccepted": "Diese Einladung wurde bereits verwendet."
   },
   "language": {
     "label": "Sprache",

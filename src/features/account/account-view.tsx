@@ -2,11 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { LogOut, Users, Database } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useAuthStore } from "@/stores/auth.store";
 import { useTranslations } from "@/i18n/context";
+import { HouseholdSection } from "./household-section";
 
 function Initials({ name }: { name: string }) {
   const parts = name.trim().split(/\s+/);
@@ -64,16 +65,7 @@ export function AccountView() {
 
       <Separator />
 
-      <div className="space-y-1">
-        <div className="flex items-center gap-3 py-3 text-sm text-muted-foreground">
-          <Users className="h-4 w-4 shrink-0" />
-          <span>{t("householdReady")}</span>
-        </div>
-        <div className="flex items-center gap-3 py-3 text-sm text-muted-foreground">
-          <Database className="h-4 w-4 shrink-0" />
-          <span>{t("syncComingSoon")}</span>
-        </div>
-      </div>
+      <HouseholdSection user={user} />
 
       <Separator />
 

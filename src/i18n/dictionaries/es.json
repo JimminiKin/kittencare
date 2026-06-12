@@ -19,7 +19,8 @@
     "off": "Desactivado",
     "given": "Dado",
     "optional": "opcional",
-    "nowLabel": "Ahora"
+    "nowLabel": "Ahora",
+    "you": "tú"
   },
   "dangerZone": {
     "deleteKittenTitle": "¿Eliminar {name} permanentemente?",
@@ -252,6 +253,40 @@
     "signInToSync": "Iniciar sesión para sincronizar",
     "householdReady": "Hogar creado — invita miembros en una próxima actualización.",
     "syncComingSoon": "Sincronización en la nube próximamente."
+  },
+  "household": {
+    "title": "Hogar",
+    "members": "Miembros",
+    "invite": "Invitar a alguien",
+    "inviteEmailPlaceholder": "email@ejemplo.com (opcional)",
+    "generateLink": "Copiar enlace de invitación",
+    "generating": "Generando…",
+    "linkCopied": "¡Enlace copiado!",
+    "pendingInvites": "Invitaciones pendientes",
+    "inviteExpires": "Vence el {date}",
+    "revoke": "Revocar",
+    "remove": "Eliminar",
+    "makeOwner": "Hacer propietario",
+    "leave": "Abandonar hogar",
+    "ownerMustTransfer": "Transfiere la propiedad antes de salir.",
+    "leaveTitle": "¿Abandonar el hogar?",
+    "leaveBody": "Perderás el acceso a todos los datos de este hogar.",
+    "transferTitle": "¿Hacer a {name} propietario?",
+    "transferBody": "Pasarás a ser miembro regular y perderás los privilegios de propietario.",
+    "removeTitle": "¿Eliminar a {name}?",
+    "removeBody": "{name} perderá el acceso a este hogar.",
+    "revokeTitle": "¿Revocar esta invitación?",
+    "revokeBody": "El enlace de invitación dejará de funcionar."
+  },
+  "invite": {
+    "invitedBy": "{name} te invita a",
+    "accept": "Unirse a {household}",
+    "accepting": "Uniéndose…",
+    "signInFirst": "Inicia sesión para aceptar esta invitación.",
+    "signInButton": "Iniciar sesión para aceptar",
+    "joined": "¡Te has unido a {household}!",
+    "notFound": "Este enlace de invitación es inválido o ha expirado.",
+    "alreadyAccepted": "Esta invitación ya ha sido usada."
   },
   "language": {
     "label": "Idioma",

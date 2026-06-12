@@ -19,7 +19,8 @@
     "off": "Off",
     "given": "Given",
     "optional": "optional",
-    "nowLabel": "Now"
+    "nowLabel": "Now",
+    "you": "you"
   },
   "dangerZone": {
     "deleteKittenTitle": "Permanently delete {name}?",
@@ -252,6 +253,40 @@
     "signInToSync": "Sign in to sync",
     "householdReady": "Household created — invite members in a future update.",
     "syncComingSoon": "Cloud sync coming soon."
+  },
+  "household": {
+    "title": "Household",
+    "members": "Members",
+    "invite": "Invite someone",
+    "inviteEmailPlaceholder": "their@email.com (optional)",
+    "generateLink": "Copy invite link",
+    "generating": "Generating…",
+    "linkCopied": "Link copied!",
+    "pendingInvites": "Pending invites",
+    "inviteExpires": "Expires {date}",
+    "revoke": "Revoke",
+    "remove": "Remove",
+    "makeOwner": "Make owner",
+    "leave": "Leave household",
+    "ownerMustTransfer": "Transfer ownership to another member before leaving.",
+    "leaveTitle": "Leave household?",
+    "leaveBody": "You'll lose access to all kitten data in this household.",
+    "transferTitle": "Make {name} the owner?",
+    "transferBody": "You'll become a regular member and lose owner privileges.",
+    "removeTitle": "Remove {name}?",
+    "removeBody": "{name} will lose access to this household.",
+    "revokeTitle": "Revoke this invite?",
+    "revokeBody": "The invite link will no longer work."
+  },
+  "invite": {
+    "invitedBy": "{name} invited you to",
+    "accept": "Join {household}",
+    "accepting": "Joining…",
+    "signInFirst": "Sign in to accept this invitation.",
+    "signInButton": "Sign in to accept",
+    "joined": "You've joined {household}!",
+    "notFound": "This invite link is invalid or has expired.",
+    "alreadyAccepted": "This invite has already been used."
   },
   "language": {
     "label": "Language",
