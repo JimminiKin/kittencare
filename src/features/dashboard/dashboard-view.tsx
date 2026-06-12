@@ -10,6 +10,7 @@ import { DashboardCard } from "./dashboard-card";
 import { useCareStore } from "@/stores/care.store";
 import { useKittenStore } from "@/stores/kitten.store";
 import { useTranslations } from "@/i18n/context";
+import { UserChip } from "@/components/layout/user-chip";
 
 const BellToggle = dynamic(
   () => import("./bell-toggle").then((m) => m.BellToggle),
@@ -40,7 +41,8 @@ export function DashboardView() {
               : t("activeMany", { count: summaries.length })}
           </h2>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          <UserChip />
           <BellToggle />
           <Button
             variant="ghost"
