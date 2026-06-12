@@ -14,6 +14,8 @@ import type {
   KittenSummary,
 } from "@/domain/types";
 import { computeAllAlerts, buildKittenSummary } from "@/services/alert.service";
+import { fireAlertNotifications } from "@/lib/notifications";
+import { useNotificationStore } from "@/stores/notification.store";
 import type { CreateFeedingInput, CreateWeightEntryInput, CreateEliminationEntryInput, CreateMedicationInput, CreateMedicationAdministrationInput, CreateHealthObservationInput } from "@/domain/validation";
 
 interface CareStore {
@@ -109,6 +111,9 @@ export const useCareStore = create<CareStore>((set, get) => ({
   refreshAlerts: async () => {
     const alerts = await computeAllAlerts(getRepositories());
     set({ alerts });
+    if (useNotificationStore.getState().enabled) {
+      fireAlertNotifications(alerts).catch(() => {});
+    }
   },
 
   refreshSummaries: async () => {

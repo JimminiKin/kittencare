@@ -214,6 +214,11 @@
     "band1SD": "±1σ: {low}–{high}g",
     "band2SD": "±2σ: {low}–{high}g"
   },
+  "notifications": {
+    "enable": "Attiva notifiche",
+    "disable": "Disattiva notifiche",
+    "blocked": "Notifiche bloccate — abilita nelle impostazioni del browser"
+  },
   "language": {
     "label": "Lingua",
     "en": "English",
