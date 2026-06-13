@@ -53,6 +53,7 @@ export async function GET(
       name: kitten.name,
       estimatedAgeDays: kitten.estimated_age_days ?? null,
       birthDate: kitten.birth_date ?? null,
+      intakeDate: kitten.intake_date ?? null,
       sex: kitten.sex ?? null,
       notes: kitten.notes ?? null,
     },

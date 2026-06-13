@@ -10,6 +10,7 @@ interface ShareData {
     name: string;
     estimatedAgeDays: number | null;
     birthDate: string | null;
+    intakeDate: string | null;
     sex: string | null;
     notes: string | null;
   };
@@ -38,6 +39,7 @@ function toKittenShape(k: ShareData["kitten"]): Kitten {
     status: "active",
     estimatedAgeDays: k.estimatedAgeDays ?? undefined,
     birthDate: k.birthDate ? new Date(k.birthDate) : undefined,
+    intakeDate: k.intakeDate ? new Date(k.intakeDate) : undefined,
     sex: (k.sex as any) ?? undefined,
     createdAt: new Date(),
     updatedAt: new Date(),
