@@ -84,6 +84,8 @@
     "statusAdopted": "adopted",
     "statusTransferred": "transferred",
     "statusDeceased": "deceased",
+    "unarchivePrompt": "Restore this kitten to active status.",
+    "unarchiveButton": "Restore to Active",
     "sexMaleLabel": "male",
     "sexFemaleLabel": "female"
   },

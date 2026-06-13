@@ -5,6 +5,26 @@ import { Camera, Loader2 } from "lucide-react";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
+async function uploadAvatar(file: File, storagePath: string): Promise<string> {
+  const supabase = getSupabaseClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error("Not authenticated");
+
+  const body = new FormData();
+  body.append("file", file);
+  body.append("storagePath", storagePath);
+
+  const res = await fetch("/api/upload/avatar", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${session.access_token}` },
+    body,
+  });
+
+  const json = await res.json() as { publicUrl?: string; error?: string };
+  if (!res.ok) throw new Error(json.error ?? "Upload failed");
+  return json.publicUrl!;
+}
+
 interface AvatarUploadProps {
   currentUrl?: string;
   name: string;
@@ -59,28 +79,17 @@ export function AvatarUpload({
     setError("");
     setUploading(true);
 
-    const supabase = getSupabaseClient();
-    const path = `${storagePath}/avatar`;
-
-    const { error: uploadError } = await supabase.storage
-      .from("avatars")
-      .upload(path, file, { upsert: true, contentType: file.type });
-
-    if (uploadError) {
-      setError(uploadError.message);
+    try {
+      const publicUrl = await uploadAvatar(file, storagePath);
+      // Append timestamp to bust browser cache when the same path is re-uploaded.
+      const freshUrl = `${publicUrl}?v=${Date.now()}`;
+      setPreviewUrl(freshUrl);
+      await onUploaded(freshUrl);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
       setUploading(false);
-      return;
     }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from("avatars")
-      .getPublicUrl(path);
-
-    // Append timestamp to bust browser cache when the same path is re-uploaded.
-    const freshUrl = `${publicUrl}?v=${Date.now()}`;
-    setPreviewUrl(freshUrl);
-    await onUploaded(freshUrl);
-    setUploading(false);
   }
 
   return (

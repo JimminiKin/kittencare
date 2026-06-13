@@ -84,6 +84,8 @@
     "statusAdopted": "adopté",
     "statusTransferred": "transféré",
     "statusDeceased": "décédé",
+    "unarchivePrompt": "Restaurer ce chaton comme actif.",
+    "unarchiveButton": "Remettre actif",
     "sexMaleLabel": "mâle",
     "sexFemaleLabel": "femelle"
   },

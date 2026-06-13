@@ -84,6 +84,8 @@
     "statusAdopted": "adotado",
     "statusTransferred": "transferido",
     "statusDeceased": "falecido",
+    "unarchivePrompt": "Restaurar este gatinho como ativo.",
+    "unarchiveButton": "Restaurar como ativo",
     "sexMaleLabel": "macho",
     "sexFemaleLabel": "fêmea"
   },

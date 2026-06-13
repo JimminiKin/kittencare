@@ -84,6 +84,8 @@
     "statusAdopted": "adoptiert",
     "statusTransferred": "übergeben",
     "statusDeceased": "verstorben",
+    "unarchivePrompt": "Dieses Kätzchen als aktiv wiederherstellen.",
+    "unarchiveButton": "Als aktiv wiederherstellen",
     "sexMaleLabel": "männlich",
     "sexFemaleLabel": "weiblich"
   },

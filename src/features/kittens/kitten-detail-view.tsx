@@ -317,7 +317,7 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
 
       <ShareSection kittenId={kitten.id} kittenName={kitten.name} />
 
-      {kitten.status === "active" && (
+      {kitten.status === "active" ? (
         <div className="pt-4 border-t">
           <p className="text-xs text-muted-foreground mb-3">{tk("archivePrompt")}</p>
           <div className="grid grid-cols-3 gap-2">
@@ -334,6 +334,18 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
               </Button>
             ))}
           </div>
+        </div>
+      ) : (
+        <div className="pt-4 border-t">
+          <p className="text-xs text-muted-foreground mb-3">{tk("unarchivePrompt")}</p>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => archiveKitten(kitten.id, "active")}
+          >
+            <Archive className="h-4 w-4 mr-2" />
+            {tk("unarchiveButton")}
+          </Button>
         </div>
       )}
 

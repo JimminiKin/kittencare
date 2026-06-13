@@ -84,6 +84,8 @@
     "statusAdopted": "adottato",
     "statusTransferred": "trasferito",
     "statusDeceased": "deceduto",
+    "unarchivePrompt": "Ripristina questo gattino come attivo.",
+    "unarchiveButton": "Ripristina come attivo",
     "sexMaleLabel": "maschio",
     "sexFemaleLabel": "femmina"
   },
