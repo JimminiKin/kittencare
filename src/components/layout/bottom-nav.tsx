@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Cat, Utensils, Scale, Activity } from "lucide-react";
+import { Home, Cat, Utensils, Scale, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "@/i18n/context";
 
@@ -11,7 +11,7 @@ const NAV_ITEMS = [
   { href: "/kittens", key: "kittens", icon: Cat },
   { href: "/feed", key: "feed", icon: Utensils },
   { href: "/weight", key: "weight", icon: Scale },
-  { href: "/health", key: "health", icon: Activity },
+  { href: "/account", key: "household", icon: Users },
 ] as const;
 
 export function BottomNav() {

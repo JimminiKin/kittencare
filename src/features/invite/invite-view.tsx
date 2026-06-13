@@ -50,7 +50,8 @@ export function InviteView({ token }: { token: string }) {
     setAccepting(false);
     if (data.error) { setErrorKey(data.error); return; }
     setDone(true);
-    setTimeout(() => router.push("/"), 2000);
+    // Full reload so the auth flow re-runs resolveHousehold now that the member row exists.
+    setTimeout(() => { window.location.href = "/"; }, 2000);
   }
 
   if (!invite && !errorKey) {
@@ -92,7 +93,7 @@ export function InviteView({ token }: { token: string }) {
         <div className="space-y-3">
           <p className="text-sm text-muted-foreground">{t("signInFirst")}</p>
           <Button asChild>
-            <Link href={`/auth`}>{t("signInButton")}</Link>
+            <Link href={`/auth?redirectTo=/invite/${token}`}>{t("signInButton")}</Link>
           </Button>
         </div>
       ) : (

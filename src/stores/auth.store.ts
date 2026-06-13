@@ -16,11 +16,14 @@ async function resolveHousehold(userId: string): Promise<HouseholdInfo | null> {
     .from("household_members")
     .select("household_id, role")
     .eq("user_id", userId)
-    .order("joined_at", { ascending: true })
-    .limit(1)
-    .maybeSingle();
+    .order("joined_at", { ascending: false });
   if (error) console.error("[auth] resolveHousehold error:", error);
-  return data ? { householdId: data.household_id, role: data.role as string } : null;
+  if (!data?.length) return null;
+  // Prefer households the user was invited into (member role) over ones they
+  // auto-created on first sign-in (owner of an otherwise empty household).
+  const asMember = data.find((r) => r.role === "member");
+  const row = asMember ?? data[0];
+  return { householdId: row.household_id, role: row.role as string };
 }
 
 async function ensureHousehold(userId: string): Promise<HouseholdInfo | null> {

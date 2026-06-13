@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +12,8 @@ import { useTranslations } from "@/i18n/context";
 
 export function AuthView() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo") ?? "/";
   const { signInWithPassword, signUpWithPassword, sendMagicLink } = useAuthStore();
   const t = useTranslations("auth");
 
@@ -39,7 +41,7 @@ export function AuthView() {
     const err = await signInWithPassword(signInEmail, signInPassword);
     setSignInLoading(false);
     if (err) { setSignInError(err); return; }
-    router.push("/");
+    window.location.href = redirectTo;
   }
 
   async function handleSignUp(e: React.FormEvent) {
