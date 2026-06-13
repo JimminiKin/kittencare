@@ -34,40 +34,41 @@ async function ensureHousehold(userId: string): Promise<string | null> {
   return householdId;
 }
 
-async function activateCloud(userId: string, accessToken: string, refreshToken: string): Promise<void> {
-  // Ensure the JWT is set before any queries — INITIAL_SESSION can fire before
-  // the client has applied the token to its internal headers.
-  await getSupabaseClient().auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+let _activating = false;
 
-  const householdId = await ensureHousehold(userId);
-  if (!householdId) {
-    console.error("[auth] Could not resolve household — staying in local mode");
-    return;
+async function activateCloud(userId: string): Promise<void> {
+  if (_activating) return;
+  _activating = true;
+
+  try {
+    const householdId = await ensureHousehold(userId);
+    if (!householdId) {
+      console.error("[auth] Could not resolve household — staying in local mode");
+      return;
+    }
+    console.log("[auth] activateCloud household:", householdId);
+
+    setSessionContext({ userId, householdId });
+    setUseCloudRepositories(true);
+
+    await useKittenStore.getState().fetchKittens();
+
+    startRealtime(householdId, userId, {
+      onKittensChange: () => { useKittenStore.getState().fetchKittens(); },
+      onEventsChange: (kittenId, _table) => {
+        const selectedId = useKittenStore.getState().selectedKittenId;
+        if (!selectedId || (kittenId && kittenId !== selectedId)) return;
+        const care = useCareStore.getState();
+        care.loadFeedingsForKitten(selectedId);
+        care.loadWeightsForKitten(selectedId);
+        care.loadEliminationsForKitten(selectedId);
+        care.loadMedicationsForKitten(selectedId);
+        care.loadHealthForKitten(selectedId);
+      },
+    });
+  } finally {
+    _activating = false;
   }
-  console.log("[auth] activateCloud household:", householdId);
-
-  setSessionContext({ userId, householdId });
-  setUseCloudRepositories(true);
-
-  // Re-fetch everything now that the cloud repos are active
-  await useKittenStore.getState().fetchKittens();
-
-  // Wire up realtime — handle changes from other household members
-  startRealtime(householdId, userId, {
-    onKittensChange: () => {
-      useKittenStore.getState().fetchKittens();
-    },
-    onEventsChange: (kittenId, _table) => {
-      const selectedId = useKittenStore.getState().selectedKittenId;
-      if (!selectedId || (kittenId && kittenId !== selectedId)) return;
-      const care = useCareStore.getState();
-      care.loadFeedingsForKitten(selectedId);
-      care.loadWeightsForKitten(selectedId);
-      care.loadEliminationsForKitten(selectedId);
-      care.loadMedicationsForKitten(selectedId);
-      care.loadHealthForKitten(selectedId);
-    },
-  });
 }
 
 interface AuthStore {
@@ -90,12 +91,13 @@ export const useAuthStore = create<AuthStore>((set) => ({
       (event, session) => {
         set({ user: session?.user ?? null, loading: false });
         if (session?.user && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
-          activateCloud(session.user.id, session.access_token, session.refresh_token).catch(console.error);
+          activateCloud(session.user.id).catch(console.error);
         }
         if (event === "SIGNED_OUT") {
           stopRealtime();
           setSessionContext(null);
           setUseCloudRepositories(false);
+          _activating = false;
         }
       }
     );
