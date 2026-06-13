@@ -11,7 +11,6 @@ import { useSummaries } from "@/hooks/use-summaries";
 import { useKittens } from "@/hooks/use-kittens";
 import { qk } from "@/lib/query-keys";
 import { useTranslations } from "@/i18n/context";
-import { UserChip } from "@/components/layout/user-chip";
 
 const BellToggle = dynamic(
   () => import("./bell-toggle").then((m) => m.BellToggle),
@@ -42,7 +41,6 @@ export function DashboardView() {
           </h2>
         </div>
         <div className="flex gap-2 items-center">
-          <UserChip />
           <BellToggle />
           <Button
             variant="ghost"

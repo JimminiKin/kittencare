@@ -12,7 +12,7 @@ export function UserChip() {
 
   if (!user) {
     return (
-      <Button variant="ghost" size="sm" asChild className="text-muted-foreground">
+      <Button size="sm" asChild>
         <Link href="/auth">{t("signIn")}</Link>
       </Button>
     );

@@ -16,16 +16,18 @@ export function LanguageSelector() {
   const { locale, setLocale } = useLocaleStore();
 
   return (
-    <div className="flex items-center gap-1 rounded-xl border border-border bg-muted/50 px-2 py-1.5">
-      <Globe className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+    <div className="flex items-center gap-0.5 rounded-lg border border-border bg-muted/50 px-1.5 py-1">
+      <Globe className="h-3 w-3 text-muted-foreground shrink-0" />
       <select
         value={locale}
         onChange={(e) => setLocale(e.target.value as Locale)}
-        className="bg-transparent text-xs font-medium text-foreground focus:outline-none cursor-pointer"
+        className="bg-transparent text-xs font-medium text-foreground focus:outline-none cursor-pointer w-8 text-center"
+        aria-label="Language"
+        title={LOCALE_LABELS[locale]}
       >
         {LOCALES.map((l) => (
           <option key={l} value={l}>
-            {LOCALE_LABELS[l]}
+            {l.toUpperCase()}
           </option>
         ))}
       </select>
