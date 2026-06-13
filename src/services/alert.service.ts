@@ -81,30 +81,30 @@ export async function computeAlertsForKitten(
     }
   }
 
-  // Check daily intake vs 7-day average
-  const todayFeedings = await repos.feedings.getByKittenSince(
+  // Check rolling 24h intake vs 7-day rolling daily average
+  const last24hFeedings = await repos.feedings.getByKittenSince(
     kitten.id,
-    new Date(now.setHours(0, 0, 0, 0))
+    subHours(now, 24)
   );
   const weekFeedings = await repos.feedings.getByKittenSince(
     kitten.id,
-    subHours(new Date(), 168)
+    subHours(now, 168)
   );
 
   const isFormula = (f: { foodType?: string }) => !f.foodType || f.foodType === "formula";
   if (weekFeedings.length > 0) {
     const weekTotal = weekFeedings.filter(isFormula).reduce((s, f) => s + (f.amountConsumedMl ?? 0), 0);
     const weekDailyAvg = weekTotal / 7;
-    const todayTotal = todayFeedings.filter(isFormula).reduce((s, f) => s + (f.amountConsumedMl ?? 0), 0);
+    const last24hTotal = last24hFeedings.filter(isFormula).reduce((s, f) => s + (f.amountConsumedMl ?? 0), 0);
 
-    if (weekDailyAvg > 0 && todayTotal < weekDailyAvg * 0.6) {
+    if (weekDailyAvg > 0 && last24hTotal < weekDailyAvg * 0.6) {
       alerts.push({
         id: uuid(),
         kittenId: kitten.id,
         kittenName: kitten.name,
         type: "low_daily_intake",
         severity: "warning",
-        params: { kittenName: kitten.name, todayMl: todayTotal, avgMl: Math.round(weekDailyAvg) },
+        params: { kittenName: kitten.name, todayMl: last24hTotal, avgMl: Math.round(weekDailyAvg) },
         timestamp: new Date(),
       });
     }
