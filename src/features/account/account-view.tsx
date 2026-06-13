@@ -45,7 +45,7 @@ export function AccountView() {
           currentUrl={user.user_metadata?.avatar_url}
           name={displayName}
           storagePath={`users/${user.id}`}
-          onUploaded={(url) => updateProfile({ avatar_url: url })}
+          onUploaded={(url) => void updateProfile({ avatar_url: url })}
           size="xl"
         />
         <div className="text-center">
