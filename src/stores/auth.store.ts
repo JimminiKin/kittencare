@@ -11,12 +11,14 @@ import { useCareStore } from "./care.store";
 
 async function resolveHouseholdId(userId: string): Promise<string | null> {
   const supabase = getSupabaseClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("household_members")
     .select("household_id")
     .eq("user_id", userId)
+    .order("joined_at", { ascending: true })
     .limit(1)
-    .single();
+    .maybeSingle();
+  if (error) console.error("[auth] resolveHouseholdId error:", error);
   return data?.household_id ?? null;
 }
 
@@ -24,15 +26,25 @@ async function ensureHousehold(userId: string): Promise<string | null> {
   const supabase = getSupabaseClient();
   let householdId = await resolveHouseholdId(userId);
   if (!householdId) {
-    await supabase.rpc("create_household", { p_name: "My Household" });
+    console.log("[auth] No household found, creating one");
+    const { error } = await supabase.rpc("create_household", { p_name: "My Household" });
+    if (error) { console.error("[auth] create_household error:", error); return null; }
     householdId = await resolveHouseholdId(userId);
   }
   return householdId;
 }
 
-async function activateCloud(userId: string): Promise<void> {
+async function activateCloud(userId: string, accessToken: string, refreshToken: string): Promise<void> {
+  // Ensure the JWT is set before any queries — INITIAL_SESSION can fire before
+  // the client has applied the token to its internal headers.
+  await getSupabaseClient().auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+
   const householdId = await ensureHousehold(userId);
-  if (!householdId) return;
+  if (!householdId) {
+    console.error("[auth] Could not resolve household — staying in local mode");
+    return;
+  }
+  console.log("[auth] activateCloud household:", householdId);
 
   setSessionContext({ userId, householdId });
   setUseCloudRepositories(true);
@@ -78,7 +90,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       (event, session) => {
         set({ user: session?.user ?? null, loading: false });
         if (session?.user && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
-          activateCloud(session.user.id).catch(console.error);
+          activateCloud(session.user.id, session.access_token, session.refresh_token).catch(console.error);
         }
         if (event === "SIGNED_OUT") {
           stopRealtime();
