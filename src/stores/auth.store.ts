@@ -16,11 +16,12 @@ async function resolveHousehold(userId: string): Promise<HouseholdInfo | null> {
     .from("household_members")
     .select("household_id, role")
     .eq("user_id", userId)
-    .order("joined_at", { ascending: false });
+    .order("joined_at", { ascending: true });
   if (error) console.error("[auth] resolveHousehold error:", error);
   if (!data?.length) return null;
   // Prefer households the user was invited into (member role) over ones they
-  // auto-created on first sign-in (owner of an otherwise empty household).
+  // auto-created on first sign-in. For multiple owned households, ascending order
+  // puts the oldest first — that is the one with actual content.
   const asMember = data.find((r) => r.role === "member");
   const row = asMember ?? data[0];
   return { householdId: row.household_id, role: row.role as string };
@@ -28,14 +29,14 @@ async function resolveHousehold(userId: string): Promise<HouseholdInfo | null> {
 
 async function ensureHousehold(userId: string): Promise<HouseholdInfo | null> {
   const supabase = getSupabaseClient();
-  let info = await resolveHousehold(userId);
-  if (!info) {
-    console.log("[auth] No household found, creating one");
-    const { error } = await supabase.rpc("create_household", { p_name: "My Household" });
-    if (error) { console.error("[auth] create_household error:", error); return null; }
-    info = await resolveHousehold(userId);
-  }
-  return info;
+  const info = await resolveHousehold(userId);
+  if (info) return info;
+  console.log("[auth] No household found, creating one");
+  // Use the UUID returned by the RPC directly — avoids a second round-trip and
+  // the consistency window where an immediate re-query might still see 0 rows.
+  const { data: newId, error } = await supabase.rpc("create_household", { p_name: "My Household" });
+  if (error || !newId) { console.error("[auth] create_household error:", error); return null; }
+  return { householdId: newId as string, role: "owner" };
 }
 
 let _activating = false;
