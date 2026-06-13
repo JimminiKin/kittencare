@@ -9,29 +9,31 @@ import { startRealtime, stopRealtime } from "@/lib/realtime";
 import { useKittenStore } from "./kitten.store";
 import { useCareStore } from "./care.store";
 
-async function resolveHouseholdId(userId: string): Promise<string | null> {
+interface HouseholdInfo { householdId: string; role: string }
+
+async function resolveHousehold(userId: string): Promise<HouseholdInfo | null> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("household_members")
-    .select("household_id")
+    .select("household_id, role")
     .eq("user_id", userId)
     .order("joined_at", { ascending: true })
     .limit(1)
     .maybeSingle();
-  if (error) console.error("[auth] resolveHouseholdId error:", error);
-  return data?.household_id ?? null;
+  if (error) console.error("[auth] resolveHousehold error:", error);
+  return data ? { householdId: data.household_id, role: data.role as string } : null;
 }
 
-async function ensureHousehold(userId: string): Promise<string | null> {
+async function ensureHousehold(userId: string): Promise<HouseholdInfo | null> {
   const supabase = getSupabaseClient();
-  let householdId = await resolveHouseholdId(userId);
-  if (!householdId) {
+  let info = await resolveHousehold(userId);
+  if (!info) {
     console.log("[auth] No household found, creating one");
     const { error } = await supabase.rpc("create_household", { p_name: "My Household" });
     if (error) { console.error("[auth] create_household error:", error); return null; }
-    householdId = await resolveHouseholdId(userId);
+    info = await resolveHousehold(userId);
   }
-  return householdId;
+  return info;
 }
 
 let _activating = false;
@@ -41,16 +43,18 @@ async function activateCloud(userId: string): Promise<void> {
   _activating = true;
 
   try {
-    const householdId = await ensureHousehold(userId);
-    if (!householdId) {
+    const household = await ensureHousehold(userId);
+    if (!household) {
       console.error("[auth] Could not resolve household — staying in local mode");
       useAuthStore.setState({ ready: true });
       return;
     }
+    const { householdId, role } = household;
     console.log("[auth] activateCloud household:", householdId);
 
     setSessionContext({ userId, householdId });
     setUseCloudRepositories(true);
+    useAuthStore.setState({ role: role as "owner" | "member" });
 
     await useKittenStore.getState().fetchKittens();
     // Unlock the UI as soon as kittens are available; summaries stream in next
@@ -84,6 +88,7 @@ async function activateCloud(userId: string): Promise<void> {
 interface AuthStore {
   user: User | null;
   ready: boolean;
+  role: "owner" | "member" | null;
   init: () => () => void;
   signInWithPassword: (email: string, password: string) => Promise<string | null>;
   signUpWithPassword: (email: string, password: string, displayName: string) => Promise<string | null>;
@@ -94,6 +99,7 @@ interface AuthStore {
 export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
   ready: false,
+  role: null,
 
   init: () => {
     const supabase = getSupabaseClient();
@@ -116,7 +122,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
           _activating = false;
           useCareStore.setState({ summaries: [], summariesLoaded: false });
           useKittenStore.setState({ kittens: [], loading: false });
-          set({ user: null, ready: true });
+          set({ user: null, ready: true, role: null });
         }
       }
     );

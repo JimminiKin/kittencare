@@ -25,8 +25,7 @@ import { useKittenStore } from "@/stores/kitten.store";
 import { useCareStore } from "@/stores/care.store";
 import { useProfiles } from "@/hooks/use-profiles";
 import { ShareSection } from "./share-section";
-import { buildKittenSummary } from "@/services/alert.service";
-import { getRepositories } from "@/db/index";
+import { buildKittenSummaryFromData } from "@/services/alert.service";
 import { formatWeight, formatWeightChange } from "@/lib/utils";
 import { useFormatAge } from "@/lib/use-format-age";
 import { useTranslations } from "@/i18n/context";
@@ -46,6 +45,10 @@ type TimelineEvent =
   | { id: string; timestamp: Date; type: "medication"; label: string; data: MedicationAdministration }
   | { id: string; timestamp: Date; type: "health"; label: string; data: HealthObservation };
 
+// Prevents StrictMode from firing the care-data effect twice (unmount+remount
+// resets useRef, but module-level state survives the StrictMode cycle).
+const _careLoading = new Set<string>();
+
 interface KittenDetailViewProps {
   kittenId: string;
 }
@@ -57,6 +60,7 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
     feedings,
     weights,
     eliminations,
+    medications,
     administrations,
     healthObservations,
     summaries: storeSummaries,
@@ -94,6 +98,8 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
 
   useEffect(() => {
     if (!kittenId) return;
+    if (_careLoading.has(kittenId)) return;
+    _careLoading.add(kittenId);
     setCareLoading(true);
     Promise.all([
       loadFeedingsForKitten(kittenId),
@@ -101,13 +107,18 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
       loadEliminationsForKitten(kittenId),
       loadMedicationsForKitten(kittenId),
       loadHealthForKitten(kittenId),
-    ]).finally(() => setCareLoading(false));
+    ]).finally(() => {
+      setCareLoading(false);
+      _careLoading.delete(kittenId);
+    });
   }, [kittenId, loadFeedingsForKitten, loadWeightsForKitten, loadEliminationsForKitten, loadMedicationsForKitten, loadHealthForKitten]);
 
   useEffect(() => {
-    if (!kitten) return;
-    buildKittenSummary(kitten, getRepositories()).then(setLocalSummary);
-  }, [kitten, feedings, weights]);
+    if (!kitten || careLoading) return;
+    setLocalSummary(
+      buildKittenSummaryFromData(kitten, feedings, weights, eliminations, medications, administrations)
+    );
+  }, [kitten, careLoading, feedings, weights, eliminations, medications, administrations]);
 
   if (!kitten) {
     return (

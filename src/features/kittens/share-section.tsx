@@ -32,17 +32,19 @@ const EXPIRY_OPTIONS = [
   { label: "share.expiryNever", days: null },
 ];
 
+const _shareLoading = new Set<string>();
+
 interface Props {
   kittenId: string;
   kittenName: string;
 }
 
 export function ShareSection({ kittenId, kittenName }: Props) {
-  const { user } = useAuthStore();
+  const { user, role } = useAuthStore();
+  const isOwner = role === "owner";
   const t = useTranslations("share");
   const tc = useTranslations("common");
 
-  const [isOwner, setIsOwner] = useState(false);
   const [tokens, setTokens] = useState<ShareToken[]>([]);
   const [fields, setFields] = useState<ShareField[]>(["weight", "feedings", "medications", "health"]);
   const [expiryDays, setExpiryDays] = useState<number | null>(30);
@@ -58,14 +60,9 @@ export function ShareSection({ kittenId, kittenName }: Props) {
 
   useEffect(() => {
     if (!user) return;
-    reload();
-    getSupabaseClient()
-      .from("household_members")
-      .select("role")
-      .eq("user_id", user.id)
-      .limit(1)
-      .single()
-      .then(({ data }) => setIsOwner(data?.role === "owner"));
+    if (_shareLoading.has(kittenId)) return;
+    _shareLoading.add(kittenId);
+    reload().finally(() => _shareLoading.delete(kittenId));
   }, [user, kittenId, reload]);
 
   if (!user) return null;
