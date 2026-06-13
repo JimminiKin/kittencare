@@ -80,7 +80,7 @@ interface AuthStore {
   updateProfile: (updates: { avatar_url?: string; display_name?: string }) => Promise<string | null>;
 }
 
-export const useAuthStore = create<AuthStore>((set) => ({
+export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
   ready: false,
   role: null,
@@ -149,7 +149,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   updateProfile: async (updates) => {
-    const { user } = useAuthStore.getState();
+    const { user } = get();
     if (!user) return "Not authenticated";
     const supabase = getSupabaseClient();
 
