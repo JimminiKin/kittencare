@@ -52,9 +52,13 @@ async function activateCloud(userId: string): Promise<void> {
     setUseCloudRepositories(true);
 
     await useKittenStore.getState().fetchKittens();
+    await useCareStore.getState().refreshSummaries();
 
     startRealtime(householdId, userId, {
-      onKittensChange: () => { useKittenStore.getState().fetchKittens(); },
+      onKittensChange: () => {
+        useKittenStore.getState().fetchKittens();
+        useCareStore.getState().refreshSummaries();
+      },
       onEventsChange: (kittenId, _table) => {
         const selectedId = useKittenStore.getState().selectedKittenId;
         if (!selectedId || (kittenId && kittenId !== selectedId)) return;
