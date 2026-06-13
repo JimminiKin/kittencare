@@ -17,21 +17,21 @@ const severityConfig = {
     bg: "bg-blue-50 border-blue-200",
     text: "text-blue-800",
     iconColor: "text-blue-500",
-    fixItClass: "text-blue-700 hover:text-blue-900",
+    fixItClass: "bg-blue-600 text-white hover:bg-blue-700 shadow-sm",
   },
   warning: {
     icon: AlertTriangle,
     bg: "bg-amber-50 border-amber-200",
     text: "text-amber-800",
     iconColor: "text-amber-500",
-    fixItClass: "text-amber-700 hover:text-amber-900",
+    fixItClass: "bg-amber-500 text-white hover:bg-amber-600 shadow-sm",
   },
   critical: {
     icon: AlertCircle,
     bg: "bg-red-50 border-red-200",
     text: "text-red-800",
     iconColor: "text-red-500",
-    fixItClass: "text-red-700 hover:text-red-900",
+    fixItClass: "bg-red-600 text-white hover:bg-red-700 shadow-sm",
   },
 };
 
@@ -67,20 +67,18 @@ export function AlertBanner({ alerts }: AlertBannerProps) {
             role="alert"
           >
             <Icon className={cn("mt-0.5 h-5 w-5 shrink-0", config.iconColor)} />
-            <div className="flex-1 min-w-0">
-              <p className={cn("text-sm font-medium", config.text)}>
-                {t(alert.type, alert.params)}
-              </p>
-              <Link
-                href={href}
-                className={cn(
-                  "mt-1 inline-block text-xs font-semibold underline underline-offset-2",
-                  config.fixItClass
-                )}
-              >
-                {t("fixIt")}
-              </Link>
-            </div>
+            <p className={cn("flex-1 text-sm font-medium", config.text)}>
+              {t(alert.type, alert.params)}
+            </p>
+            <Link
+              href={href}
+              className={cn(
+                "shrink-0 inline-flex items-center rounded-md px-3 py-1.5 text-xs font-semibold transition-colors",
+                config.fixItClass
+              )}
+            >
+              {t("fixIt")}
+            </Link>
             <button
               onClick={() => setDismissed((s) => new Set(s).add(alert.id))}
               className={cn("shrink-0 opacity-60 hover:opacity-100", config.text)}
