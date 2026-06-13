@@ -1,5 +1,5 @@
 import { getSupabaseClient } from "@/lib/supabase/client";
-import { getRepositories } from "@/db/index";
+import { getDB } from "@/db/database";
 
 const KEY = "kittencare-migrated";
 
@@ -23,7 +23,9 @@ export async function migrateLocalToCloud(
   userId: string
 ): Promise<{ count: number; error: string | null }> {
   const supabase = getSupabaseClient();
-  const repos = getRepositories();
+  // Always read from Dexie directly — getRepositories() may already point at
+  // Supabase by the time the user clicks Upload (activateCloud runs first).
+  const db = getDB();
 
   // Resolve the user's household
   const { data: membership } = await supabase
@@ -39,13 +41,13 @@ export async function migrateLocalToCloud(
   // Load everything from IndexedDB in parallel
   const [kittens, feedings, weights, eliminations, medications, admins, health] =
     await Promise.all([
-      repos.kittens.getAll(),
-      repos.feedings.getAll(),
-      repos.weights.getAll(),
-      repos.eliminations.getAll(),
-      repos.medications.getAll(),
-      repos.administrations.getAll(),
-      repos.health.getAll(),
+      db.kittens.toArray(),
+      db.feedings.toArray(),
+      db.weights.toArray(),
+      db.eliminations.toArray(),
+      db.medications.toArray(),
+      db.administrations.toArray(),
+      db.health.toArray(),
     ]);
 
   const total =

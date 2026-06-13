@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { NumericStepper } from "@/components/shared/numeric-stepper";
 import { PastTimePicker } from "@/components/shared/past-time-picker";
-import { useKittenStore } from "@/stores/kitten.store";
+import { useKittens } from "@/hooks/use-kittens";
 import { useCareStore } from "@/stores/care.store";
 import { useTranslations } from "@/i18n/context";
 import { formatWeight } from "@/lib/utils";
@@ -26,7 +26,7 @@ interface WeightEntryViewProps {
 
 export function WeightEntryView({ defaultKittenId }: WeightEntryViewProps) {
   const router = useRouter();
-  const { kittens, fetchKittens } = useKittenStore();
+  const { data: kittens = [] } = useKittens();
   const { addWeight } = useCareStore();
   const t = useTranslations("weight");
   const tc = useTranslations("common");
@@ -39,10 +39,6 @@ export function WeightEntryView({ defaultKittenId }: WeightEntryViewProps) {
   const [timestamp, setTimestamp] = useState<Date>(new Date());
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    fetchKittens();
-  }, [fetchKittens]);
 
   useEffect(() => {
     if (!kittenId && activeKittens.length > 0) {

@@ -3,6 +3,8 @@
 import { create } from "zustand";
 import { v4 as uuid } from "uuid";
 import { getRepositories } from "@/db/index";
+import { getQueryClient } from "@/lib/query-client";
+import { qk } from "@/lib/query-keys";
 import type {
   Feeding,
   WeightEntry,
@@ -10,220 +12,164 @@ import type {
   Medication,
   MedicationAdministration,
   HealthObservation,
-  Alert,
-  KittenSummary,
 } from "@/domain/types";
-import { computeAllAlerts, buildKittenSummary } from "@/services/alert.service";
-import { fireAlertNotifications } from "@/lib/notifications";
-import { useNotificationStore } from "@/stores/notification.store";
-import type { CreateFeedingInput, CreateWeightEntryInput, CreateEliminationEntryInput, CreateMedicationInput, CreateMedicationAdministrationInput, CreateHealthObservationInput } from "@/domain/validation";
-import { useKittenStore } from "@/stores/kitten.store";
+import type {
+  CreateFeedingInput,
+  CreateWeightEntryInput,
+  CreateEliminationEntryInput,
+  CreateMedicationInput,
+  CreateMedicationAdministrationInput,
+  CreateHealthObservationInput,
+} from "@/domain/validation";
+
+// After each write, invalidate the relevant per-kitten query and summaries.
+// Updates use full invalidation (re-fetch) so the server is always the source
+// of truth; adds use setQueryData for an instant optimistic prepend.
+const qc = () => getQueryClient();
 
 interface CareStore {
-  // State
-  feedings: Feeding[];
-  weights: WeightEntry[];
-  eliminations: EliminationEntry[];
-  medications: Medication[];
-  administrations: MedicationAdministration[];
-  healthObservations: HealthObservation[];
-  alerts: Alert[];
-  summaries: KittenSummary[];
-  summariesLoaded: boolean;
-  loading: boolean;
-  error: string | null;
-
-  // Load operations
-  loadFeedingsForKitten(kittenId: string): Promise<void>;
-  loadWeightsForKitten(kittenId: string): Promise<void>;
-  loadEliminationsForKitten(kittenId: string): Promise<void>;
-  loadMedicationsForKitten(kittenId: string): Promise<void>;
-  loadHealthForKitten(kittenId: string): Promise<void>;
-  refreshAlerts(): Promise<void>;
-  refreshSummaries(): Promise<void>;
-
-  // Feed
   addFeeding(input: CreateFeedingInput): Promise<Feeding>;
   updateFeeding(id: string, partial: Partial<Omit<Feeding, "id">>): Promise<void>;
   deleteFeeding(id: string): Promise<void>;
 
-  // Weight
   addWeight(input: CreateWeightEntryInput): Promise<WeightEntry>;
   updateWeight(id: string, partial: Partial<Omit<WeightEntry, "id">>): Promise<void>;
   deleteWeight(id: string): Promise<void>;
 
-  // Elimination
   addElimination(input: CreateEliminationEntryInput): Promise<EliminationEntry>;
   updateElimination(id: string, partial: Partial<Omit<EliminationEntry, "id">>): Promise<void>;
   deleteElimination(id: string): Promise<void>;
 
-  // Medication
   addMedication(input: CreateMedicationInput): Promise<Medication>;
   updateMedication(id: string, partial: Partial<Omit<Medication, "id">>): Promise<void>;
   deleteMedication(id: string): Promise<void>;
   administerMedication(input: CreateMedicationAdministrationInput): Promise<MedicationAdministration>;
   deleteAdministration(id: string): Promise<void>;
 
-  // Health
   addHealthObservation(input: CreateHealthObservationInput): Promise<HealthObservation>;
   updateHealthObservation(id: string, partial: Partial<Omit<HealthObservation, "id">>): Promise<void>;
   deleteHealthObservation(id: string): Promise<void>;
 }
 
-export const useCareStore = create<CareStore>((set, get) => ({
-  feedings: [],
-  weights: [],
-  eliminations: [],
-  medications: [],
-  administrations: [],
-  healthObservations: [],
-  alerts: [],
-  summaries: [],
-  summariesLoaded: false,
-  loading: false,
-  error: null,
-
-  loadFeedingsForKitten: async (kittenId) => {
-    const feedings = await getRepositories().feedings.getByKitten(kittenId);
-    set({ feedings });
-  },
-
-  loadWeightsForKitten: async (kittenId) => {
-    const weights = await getRepositories().weights.getByKitten(kittenId);
-    set({ weights });
-  },
-
-  loadEliminationsForKitten: async (kittenId) => {
-    const eliminations = await getRepositories().eliminations.getByKitten(kittenId);
-    set({ eliminations });
-  },
-
-  loadMedicationsForKitten: async (kittenId) => {
-    const [medications, administrations] = await Promise.all([
-      getRepositories().medications.getByKitten(kittenId),
-      getRepositories().administrations.getByKittenSince(kittenId, new Date(0)),
-    ]);
-    set({ medications, administrations });
-  },
-
-  loadHealthForKitten: async (kittenId) => {
-    const healthObservations = await getRepositories().health.getByKitten(kittenId);
-    set({ healthObservations });
-  },
-
-  refreshAlerts: async () => {
-    const alerts = await computeAllAlerts(getRepositories());
-    set({ alerts });
-    if (useNotificationStore.getState().enabled) {
-      fireAlertNotifications(alerts).catch(() => {});
-    }
-  },
-
-  refreshSummaries: async () => {
-    const repos = getRepositories();
-    const stored = useKittenStore.getState().kittens.filter((k) => k.status === "active");
-    const kittens = stored.length > 0 ? stored : await repos.kittens.getActive();
-    const results = await Promise.allSettled(kittens.map((k) => buildKittenSummary(k, repos)));
-    const summaries = results.flatMap((r) => (r.status === "fulfilled" ? [r.value] : []));
-    set({ summaries, summariesLoaded: true });
-  },
+export const useCareStore = create<CareStore>(() => ({
+  // ── Feeding ─────────────────────────────────────────────────────────────────
 
   addFeeding: async (input) => {
     const feeding: Feeding = { ...input, id: uuid() };
     await getRepositories().feedings.create(feeding);
-    set((s) => ({ feedings: [feeding, ...s.feedings] }));
+    qc().setQueryData<Feeding[]>(qk.feedings(feeding.kittenId), (old = []) => [feeding, ...old]);
+    qc().invalidateQueries({ queryKey: qk.summaries() });
     return feeding;
   },
 
   updateFeeding: async (id, partial) => {
     await getRepositories().feedings.update(id, partial);
-    set((s) => ({ feedings: s.feedings.map((f) => (f.id === id ? { ...f, ...partial } : f)) }));
+    qc().invalidateQueries({ queryKey: ["feedings"] });
+    qc().invalidateQueries({ queryKey: qk.summaries() });
   },
 
   deleteFeeding: async (id) => {
     await getRepositories().feedings.delete(id);
-    set((s) => ({ feedings: s.feedings.filter((f) => f.id !== id) }));
+    qc().invalidateQueries({ queryKey: ["feedings"] });
+    qc().invalidateQueries({ queryKey: qk.summaries() });
   },
+
+  // ── Weight ───────────────────────────────────────────────────────────────────
 
   addWeight: async (input) => {
     const entry: WeightEntry = { ...input, id: uuid() };
     await getRepositories().weights.create(entry);
-    set((s) => ({ weights: [entry, ...s.weights] }));
+    qc().setQueryData<WeightEntry[]>(qk.weights(entry.kittenId), (old = []) => [entry, ...old]);
+    qc().invalidateQueries({ queryKey: qk.summaries() });
     return entry;
   },
 
   updateWeight: async (id, partial) => {
     await getRepositories().weights.update(id, partial);
-    set((s) => ({ weights: s.weights.map((w) => (w.id === id ? { ...w, ...partial } : w)) }));
+    qc().invalidateQueries({ queryKey: ["weights"] });
+    qc().invalidateQueries({ queryKey: qk.summaries() });
   },
 
   deleteWeight: async (id) => {
     await getRepositories().weights.delete(id);
-    set((s) => ({ weights: s.weights.filter((w) => w.id !== id) }));
+    qc().invalidateQueries({ queryKey: ["weights"] });
+    qc().invalidateQueries({ queryKey: qk.summaries() });
   },
+
+  // ── Elimination ──────────────────────────────────────────────────────────────
 
   addElimination: async (input) => {
     const entry: EliminationEntry = { ...input, id: uuid() };
     await getRepositories().eliminations.create(entry);
-    set((s) => ({ eliminations: [entry, ...s.eliminations] }));
+    qc().setQueryData<EliminationEntry[]>(qk.eliminations(entry.kittenId), (old = []) => [entry, ...old]);
+    qc().invalidateQueries({ queryKey: qk.summaries() });
     return entry;
   },
 
   updateElimination: async (id, partial) => {
     await getRepositories().eliminations.update(id, partial);
-    set((s) => ({ eliminations: s.eliminations.map((e) => (e.id === id ? { ...e, ...partial } : e)) }));
+    qc().invalidateQueries({ queryKey: ["eliminations"] });
+    qc().invalidateQueries({ queryKey: qk.summaries() });
   },
 
   deleteElimination: async (id) => {
     await getRepositories().eliminations.delete(id);
-    set((s) => ({ eliminations: s.eliminations.filter((e) => e.id !== id) }));
+    qc().invalidateQueries({ queryKey: ["eliminations"] });
+    qc().invalidateQueries({ queryKey: qk.summaries() });
   },
+
+  // ── Medication ───────────────────────────────────────────────────────────────
 
   addMedication: async (input) => {
     const medication: Medication = { ...input, id: uuid() };
     await getRepositories().medications.create(medication);
-    set((s) => ({ medications: [medication, ...s.medications] }));
+    qc().setQueryData<Medication[]>(qk.medications(medication.kittenId), (old = []) => [medication, ...old]);
+    qc().invalidateQueries({ queryKey: qk.summaries() });
     return medication;
   },
 
   updateMedication: async (id, partial) => {
     await getRepositories().medications.update(id, partial);
-    set((s) => ({
-      medications: s.medications.map((m) => (m.id === id ? { ...m, ...partial } : m)),
-    }));
+    qc().invalidateQueries({ queryKey: ["medications"] });
+    qc().invalidateQueries({ queryKey: qk.summaries() });
   },
 
   deleteMedication: async (id) => {
     await getRepositories().medications.delete(id);
-    set((s) => ({ medications: s.medications.filter((m) => m.id !== id) }));
+    qc().invalidateQueries({ queryKey: ["medications"] });
+    qc().invalidateQueries({ queryKey: qk.summaries() });
   },
 
   administerMedication: async (input) => {
     const admin: MedicationAdministration = { ...input, id: uuid() };
     await getRepositories().administrations.create(admin);
-    set((s) => ({ administrations: [admin, ...s.administrations] }));
+    qc().setQueryData<MedicationAdministration[]>(qk.admins(admin.kittenId), (old = []) => [admin, ...old]);
+    qc().invalidateQueries({ queryKey: qk.summaries() });
     return admin;
   },
 
   deleteAdministration: async (id) => {
     await getRepositories().administrations.delete(id);
-    set((s) => ({ administrations: s.administrations.filter((a) => a.id !== id) }));
+    qc().invalidateQueries({ queryKey: ["admins"] });
+    qc().invalidateQueries({ queryKey: qk.summaries() });
   },
+
+  // ── Health ───────────────────────────────────────────────────────────────────
 
   addHealthObservation: async (input) => {
     const obs: HealthObservation = { ...input, id: uuid() };
     await getRepositories().health.create(obs);
-    set((s) => ({ healthObservations: [obs, ...s.healthObservations] }));
+    qc().setQueryData<HealthObservation[]>(qk.health(obs.kittenId), (old = []) => [obs, ...old]);
     return obs;
   },
 
   updateHealthObservation: async (id, partial) => {
     await getRepositories().health.update(id, partial);
-    set((s) => ({ healthObservations: s.healthObservations.map((h) => (h.id === id ? { ...h, ...partial } : h)) }));
+    qc().invalidateQueries({ queryKey: ["health"] });
   },
 
   deleteHealthObservation: async (id) => {
     await getRepositories().health.delete(id);
-    set((s) => ({ healthObservations: s.healthObservations.filter((h) => h.id !== id) }));
+    qc().invalidateQueries({ queryKey: ["health"] });
   },
 }));

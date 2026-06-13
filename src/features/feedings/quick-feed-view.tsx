@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { NumericStepper } from "@/components/shared/numeric-stepper";
 import { PastTimePicker } from "@/components/shared/past-time-picker";
-import { useKittenStore } from "@/stores/kitten.store";
+import { useKittens } from "@/hooks/use-kittens";
 import { useCareStore } from "@/stores/care.store";
 import { useTranslations } from "@/i18n/context";
 import type { FeedingMethod, FoodType } from "@/domain/types";
@@ -27,7 +27,7 @@ interface QuickFeedViewProps {
 
 export function QuickFeedView({ defaultKittenId }: QuickFeedViewProps) {
   const router = useRouter();
-  const { kittens, fetchKittens } = useKittenStore();
+  const { data: kittens = [] } = useKittens();
   const { addFeeding, addElimination } = useCareStore();
   const t = useTranslations("feeding");
   const tc = useTranslations("common");
@@ -57,10 +57,6 @@ export function QuickFeedView({ defaultKittenId }: QuickFeedViewProps) {
     { value: "syringe", label: t("syringe"), emoji: "💉" },
     { value: "tube", label: t("tube"), emoji: "🩺" },
   ];
-
-  useEffect(() => {
-    fetchKittens();
-  }, [fetchKittens]);
 
   useEffect(() => {
     if (!kittenId && activeKittens.length > 0) {

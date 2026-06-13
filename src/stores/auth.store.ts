@@ -6,8 +6,7 @@ import { getSupabaseClient } from "@/lib/supabase/client";
 import { setSessionContext } from "@/lib/current-session";
 import { setUseCloudRepositories } from "@/db/index";
 import { startRealtime, stopRealtime } from "@/lib/realtime";
-import { useKittenStore } from "./kitten.store";
-import { useCareStore } from "./care.store";
+import { getQueryClient } from "@/lib/query-client";
 
 interface HouseholdInfo { householdId: string; role: string }
 
@@ -54,29 +53,9 @@ async function activateCloud(userId: string): Promise<void> {
 
     setSessionContext({ userId, householdId });
     setUseCloudRepositories(true);
-    useAuthStore.setState({ role: role as "owner" | "member" });
+    useAuthStore.setState({ role: role as "owner" | "member", ready: true });
 
-    await useKittenStore.getState().fetchKittens();
-    // Unlock the UI as soon as kittens are available; summaries stream in next
-    useAuthStore.setState({ ready: true });
-    useCareStore.getState().refreshSummaries().catch(console.error);
-
-    startRealtime(householdId, userId, {
-      onKittensChange: async () => {
-        await useKittenStore.getState().fetchKittens();
-        useCareStore.getState().refreshSummaries();
-      },
-      onEventsChange: (kittenId, _table) => {
-        const selectedId = useKittenStore.getState().selectedKittenId;
-        if (!selectedId || (kittenId && kittenId !== selectedId)) return;
-        const care = useCareStore.getState();
-        care.loadFeedingsForKitten(selectedId);
-        care.loadWeightsForKitten(selectedId);
-        care.loadEliminationsForKitten(selectedId);
-        care.loadMedicationsForKitten(selectedId);
-        care.loadHealthForKitten(selectedId);
-      },
-    });
+    startRealtime(householdId, userId);
   } catch (err) {
     console.error("[auth] activateCloud error:", err);
     useAuthStore.setState({ ready: true });
@@ -120,8 +99,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
           setSessionContext(null);
           setUseCloudRepositories(false);
           _activating = false;
-          useCareStore.setState({ summaries: [], summariesLoaded: false });
-          useKittenStore.setState({ kittens: [], loading: false });
+          getQueryClient().clear();
           set({ user: null, ready: true, role: null });
         }
       }

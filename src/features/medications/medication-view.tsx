@@ -17,7 +17,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { NumericStepper } from "@/components/shared/numeric-stepper";
-import { useKittenStore } from "@/stores/kitten.store";
+import { useKittens } from "@/hooks/use-kittens";
+import { useKittenCare } from "@/hooks/use-kitten-care";
 import { useCareStore } from "@/stores/care.store";
 import { useTranslations } from "@/i18n/context";
 import type { Medication, MedicationAdministration } from "@/domain/types";
@@ -29,30 +30,22 @@ interface MedicationViewProps {
 }
 
 export function MedicationView({ defaultKittenId }: MedicationViewProps) {
-  const { kittens, fetchKittens } = useKittenStore();
-  const { medications, administrations, loadMedicationsForKitten, addMedication, deleteMedication, administerMedication } = useCareStore();
+  const { data: kittens = [] } = useKittens();
+  const { addMedication, deleteMedication, administerMedication } = useCareStore();
   const t = useTranslations("medication");
   const tc = useTranslations("common");
 
   const activeKittens = kittens.filter((k) => k.status === "active");
   const [selectedKittenId, setSelectedKittenId] = useState(defaultKittenId ?? "");
-
-  useEffect(() => {
-    fetchKittens();
-  }, [fetchKittens]);
+  const { medications: kittenMeds, administrations: kittenAdmins } = useKittenCare(
+    selectedKittenId || activeKittens[0]?.id || ""
+  );
 
   useEffect(() => {
     if (!selectedKittenId && activeKittens.length > 0) {
       setSelectedKittenId(defaultKittenId ?? activeKittens[0].id);
     }
   }, [activeKittens, selectedKittenId, defaultKittenId]);
-
-  useEffect(() => {
-    if (selectedKittenId) loadMedicationsForKitten(selectedKittenId);
-  }, [selectedKittenId, loadMedicationsForKitten]);
-
-  const kittenMeds = medications.filter((m) => m.kittenId === selectedKittenId);
-  const kittenAdmins = administrations.filter((a) => a.kittenId === selectedKittenId);
 
   const getLatestAdmin = (medId: string): MedicationAdministration | undefined =>
     kittenAdmins

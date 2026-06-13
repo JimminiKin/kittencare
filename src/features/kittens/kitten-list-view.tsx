@@ -1,24 +1,19 @@
 "use client";
 
-import { useEffect } from "react";
 import Link from "next/link";
 import { Plus, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { KittenAvatar } from "@/components/shared/kitten-avatar";
-import { useKittenStore } from "@/stores/kitten.store";
+import { useKittens } from "@/hooks/use-kittens";
 import { useTranslations } from "@/i18n/context";
 import { useFormatAge } from "@/lib/use-format-age";
 
 export function KittenListView() {
-  const { kittens, loading, fetchKittens } = useKittenStore();
+  const { data: kittens = [], isLoading: loading } = useKittens();
   const t = useTranslations("kitten");
   const formatAge = useFormatAge();
-
-  useEffect(() => {
-    fetchKittens();
-  }, [fetchKittens]);
 
   const active = kittens.filter((k) => k.status === "active");
   const archived = kittens.filter((k) => k.status !== "active");

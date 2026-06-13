@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { Copy, Check, Link2, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -14,9 +14,11 @@ import {
   type ShareField,
   type ShareToken,
 } from "@/services/share.service";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/auth.store";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { useTranslations } from "@/i18n/context";
+import { qk } from "@/lib/query-keys";
 
 const ALL_FIELDS: { key: ShareField; label: string }[] = [
   { key: "weight", label: "share.fieldWeight" },
@@ -32,38 +34,33 @@ const EXPIRY_OPTIONS = [
   { label: "share.expiryNever", days: null },
 ];
 
-const _shareLoading = new Set<string>();
-
 interface Props {
   kittenId: string;
   kittenName: string;
 }
 
 export function ShareSection({ kittenId, kittenName }: Props) {
+  const qc = useQueryClient();
   const { user, role } = useAuthStore();
   const isOwner = role === "owner";
   const t = useTranslations("share");
   const tc = useTranslations("common");
 
-  const [tokens, setTokens] = useState<ShareToken[]>([]);
+  const { data: tokens = [] } = useQuery({
+    queryKey: qk.shareTokens(kittenId),
+    queryFn: () => getShareTokensForKitten(kittenId),
+    enabled: !!user,
+    staleTime: 60_000,
+  });
+
+  const reload = () => qc.invalidateQueries({ queryKey: qk.shareTokens(kittenId) });
+
   const [fields, setFields] = useState<ShareField[]>(["weight", "feedings", "medications", "health"]);
   const [expiryDays, setExpiryDays] = useState<number | null>(30);
   const [generating, setGenerating] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
   const [revokeTarget, setRevokeTarget] = useState<ShareToken | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  const reload = useCallback(async () => {
-    const list = await getShareTokensForKitten(kittenId);
-    setTokens(list);
-  }, [kittenId]);
-
-  useEffect(() => {
-    if (!user) return;
-    if (_shareLoading.has(kittenId)) return;
-    _shareLoading.add(kittenId);
-    reload().finally(() => _shareLoading.delete(kittenId));
-  }, [user, kittenId, reload]);
 
   if (!user) return null;
 

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/auth.store";
-import { getRepositories } from "@/db/index";
+import { getDB } from "@/db/database";
 import {
   migrateLocalToCloud,
   isMigrated,
@@ -25,8 +25,8 @@ export function MigrationBanner() {
     if (!user) return;
     if (isMigrated(user.id)) return;
 
-    getRepositories()
-      .kittens.getAll()
+    getDB()
+      .kittens.toArray()
       .then((kittens) => {
         if (kittens.length > 0) setShow(true);
         else markMigrated(user.id);

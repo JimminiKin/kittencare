@@ -16,7 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useKittenStore } from "@/stores/kitten.store";
+import { useKittens } from "@/hooks/use-kittens";
+import { useKittenCare } from "@/hooks/use-kitten-care";
 import { useCareStore } from "@/stores/care.store";
 import { useTranslations } from "@/i18n/context";
 import type { EnergyLevel, HydrationLevel, AppetiteLevel } from "@/domain/types";
@@ -64,8 +65,8 @@ function OptionPicker<T extends string>({
 
 export function HealthLogView({ defaultKittenId }: HealthLogViewProps) {
   const router = useRouter();
-  const { kittens, fetchKittens } = useKittenStore();
-  const { healthObservations, addHealthObservation, loadHealthForKitten } = useCareStore();
+  const { data: kittens = [] } = useKittens();
+  const { addHealthObservation } = useCareStore();
   const t = useTranslations("health");
   const tc = useTranslations("common");
 
@@ -89,6 +90,7 @@ export function HealthLogView({ defaultKittenId }: HealthLogViewProps) {
 
   const activeKittens = kittens.filter((k) => k.status === "active");
   const [kittenId, setKittenId] = useState(defaultKittenId ?? "");
+  const { healthObservations } = useKittenCare(kittenId || activeKittens[0]?.id || "");
   const [energy, setEnergy] = useState<EnergyLevel>("normal");
   const [hydration, setHydration] = useState<HydrationLevel>("normal");
   const [appetite, setAppetite] = useState<AppetiteLevel>("normal");
@@ -98,17 +100,11 @@ export function HealthLogView({ defaultKittenId }: HealthLogViewProps) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  useEffect(() => { fetchKittens(); }, [fetchKittens]);
-
   useEffect(() => {
     if (!kittenId && activeKittens.length > 0) {
       setKittenId(defaultKittenId ?? activeKittens[0].id);
     }
   }, [activeKittens, kittenId, defaultKittenId]);
-
-  useEffect(() => {
-    if (kittenId) loadHealthForKitten(kittenId);
-  }, [kittenId, loadHealthForKitten]);
 
   const handleSave = async () => {
     if (!kittenId) return;
@@ -141,7 +137,7 @@ export function HealthLogView({ defaultKittenId }: HealthLogViewProps) {
     );
   }
 
-  const kittenObs = healthObservations.filter((h) => h.kittenId === kittenId);
+  const kittenObs = healthObservations;
 
   return (
     <div className="space-y-6">

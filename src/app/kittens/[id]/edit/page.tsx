@@ -1,22 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import { KittenForm } from "@/features/kittens/kitten-form";
 import { PageHeader } from "@/components/shared/page-header";
-import { useKittenStore } from "@/stores/kitten.store";
+import { useKitten } from "@/hooks/use-kittens";
 import { useTranslations } from "@/i18n/context";
 
 export default function EditKittenPage() {
   const params = useParams<{ id: string }>();
-  const { getKittenById, fetchKittens, kittens } = useKittenStore();
+  const kitten = useKitten(params.id);
   const t = useTranslations("kitten");
-
-  useEffect(() => {
-    if (kittens.length === 0) fetchKittens();
-  }, [kittens.length, fetchKittens]);
-
-  const kitten = getKittenById(params.id);
 
   return (
     <>

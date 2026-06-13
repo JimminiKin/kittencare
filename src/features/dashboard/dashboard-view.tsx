@@ -6,8 +6,10 @@ import { Plus, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AlertBanner } from "@/components/shared/alert-banner";
 import { DashboardCard } from "./dashboard-card";
-import { useCareStore } from "@/stores/care.store";
-import { useKittenStore } from "@/stores/kitten.store";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSummaries } from "@/hooks/use-summaries";
+import { useKittens } from "@/hooks/use-kittens";
+import { qk } from "@/lib/query-keys";
 import { useTranslations } from "@/i18n/context";
 import { UserChip } from "@/components/layout/user-chip";
 
@@ -17,13 +19,13 @@ const BellToggle = dynamic(
 );
 
 export function DashboardView() {
-  const { summaries, summariesLoaded, refreshSummaries, refreshAlerts } = useCareStore();
-  const { loading, kittens } = useKittenStore();
+  const qc = useQueryClient();
+  const { data: kittens = [], isLoading: kittensLoading } = useKittens();
+  const { data: summaries = [], isLoading: summariesLoading } = useSummaries();
   const t = useTranslations("dashboard");
 
   const activeCount = kittens.filter((k) => k.status === "active").length;
-  // True while kittens are known but the first refreshSummaries hasn't completed yet
-  const summariesPending = !loading && activeCount > 0 && !summariesLoaded;
+  const summariesPending = !kittensLoading && activeCount > 0 && summariesLoading;
 
   const allAlerts = summaries.flatMap((s) => s.alerts);
 
@@ -45,7 +47,7 @@ export function DashboardView() {
           <Button
             variant="ghost"
             size="icon-sm"
-            onClick={() => { refreshSummaries(); refreshAlerts(); }}
+            onClick={() => { qc.invalidateQueries({ queryKey: qk.kittens() }); qc.invalidateQueries({ queryKey: qk.summaries() }); }}
             aria-label={t("refresh")}
           >
             <RefreshCw className="h-4 w-4" />
@@ -59,7 +61,7 @@ export function DashboardView() {
         </div>
       </div>
 
-      {loading || summariesPending ? (
+      {kittensLoading || summariesPending ? (
         <div className="space-y-3">
           {Array.from({ length: activeCount || 2 }).map((_, i) => (
             <div key={i} className="h-36 rounded-2xl bg-muted animate-pulse" />

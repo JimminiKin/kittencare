@@ -3,71 +3,51 @@
 import { create } from "zustand";
 import { v4 as uuid } from "uuid";
 import { getRepositories } from "@/db/index";
+import { getQueryClient } from "@/lib/query-client";
+import { qk } from "@/lib/query-keys";
 import type { Kitten } from "@/domain/types";
 import type { CreateKittenInput } from "@/domain/validation";
 
-interface KittenStore {
-  kittens: Kitten[];
-  loading: boolean;
-  error: string | null;
-  selectedKittenId: string | null;
+const qc = () => getQueryClient();
 
-  // Actions
-  fetchKittens(): Promise<void>;
+interface KittenStore {
+  selectedKittenId: string | null;
+  selectKitten(id: string | null): void;
+
   addKitten(input: CreateKittenInput): Promise<Kitten>;
   updateKitten(id: string, partial: Partial<Omit<Kitten, "id">>): Promise<void>;
   archiveKitten(id: string, status: Kitten["status"]): Promise<void>;
   deleteKitten(id: string): Promise<void>;
-  selectKitten(id: string | null): void;
-
-  // Computed
-  activeKittens(): Kitten[];
-  getKittenById(id: string): Kitten | undefined;
 }
 
-export const useKittenStore = create<KittenStore>((set, get) => ({
-  kittens: [],
-  loading: false,
-  error: null,
+export const useKittenStore = create<KittenStore>((set) => ({
   selectedKittenId: null,
-
-  fetchKittens: async () => {
-    if (get().kittens.length === 0) set({ loading: true, error: null });
-    try {
-      const kittens = await getRepositories().kittens.getAll();
-      set({ kittens, loading: false });
-    } catch (e) {
-      set({ error: String(e), loading: false });
-    }
-  },
+  selectKitten: (id) => set({ selectedKittenId: id }),
 
   addKitten: async (input) => {
     const now = new Date();
-    const kitten: Kitten = {
-      ...input,
-      id: uuid(),
-      status: input.status ?? "active",
-      createdAt: now,
-      updatedAt: now,
-    };
+    const kitten: Kitten = { ...input, id: uuid(), status: input.status ?? "active", createdAt: now, updatedAt: now };
     await getRepositories().kittens.create(kitten);
-    set((s) => ({ kittens: [kitten, ...s.kittens] }));
+    qc().setQueryData<Kitten[]>(qk.kittens(), (old = []) => [kitten, ...old]);
+    qc().invalidateQueries({ queryKey: qk.summaries() });
     return kitten;
   },
 
   updateKitten: async (id, partial) => {
     const updated = { ...partial, updatedAt: new Date() };
     await getRepositories().kittens.update(id, updated);
-    set((s) => ({
-      kittens: s.kittens.map((k) => (k.id === id ? { ...k, ...updated } : k)),
-    }));
+    qc().setQueryData<Kitten[]>(qk.kittens(), (old = []) =>
+      old.map((k) => (k.id === id ? { ...k, ...updated } : k))
+    );
+    qc().invalidateQueries({ queryKey: qk.summaries() });
   },
 
   archiveKitten: async (id, status) => {
     await getRepositories().kittens.update(id, { status, updatedAt: new Date() });
-    set((s) => ({
-      kittens: s.kittens.map((k) => (k.id === id ? { ...k, status } : k)),
-    }));
+    qc().setQueryData<Kitten[]>(qk.kittens(), (old = []) =>
+      old.map((k) => (k.id === id ? { ...k, status } : k))
+    );
+    qc().invalidateQueries({ queryKey: qk.summaries() });
   },
 
   deleteKitten: async (id) => {
@@ -89,11 +69,13 @@ export const useKittenStore = create<KittenStore>((set, get) => ({
       ...administrations.map((a) => repos.administrations.delete(a.id)),
     ]);
     await repos.kittens.delete(id);
-    set((s) => ({ kittens: s.kittens.filter((k) => k.id !== id) }));
+    qc().setQueryData<Kitten[]>(qk.kittens(), (old = []) => old.filter((k) => k.id !== id));
+    qc().removeQueries({ queryKey: qk.feedings(id) });
+    qc().removeQueries({ queryKey: qk.weights(id) });
+    qc().removeQueries({ queryKey: qk.eliminations(id) });
+    qc().removeQueries({ queryKey: qk.medications(id) });
+    qc().removeQueries({ queryKey: qk.admins(id) });
+    qc().removeQueries({ queryKey: qk.health(id) });
+    qc().invalidateQueries({ queryKey: qk.summaries() });
   },
-
-  selectKitten: (id) => set({ selectedKittenId: id }),
-
-  activeKittens: () => get().kittens.filter((k) => k.status === "active"),
-  getKittenById: (id) => get().kittens.find((k) => k.id === id),
 }));
