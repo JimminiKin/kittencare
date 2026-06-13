@@ -12,12 +12,13 @@ import type {
 } from "@/domain/types";
 import type { Repositories } from "@/repositories/interfaces";
 
-const FEEDING_INTERVAL_HOURS = { newborn: 2, young: 3, older: 4 };
-
+// Feeding intervals by age bracket (foster kitten guidelines)
 function getFeedingIntervalHours(estimatedAgeDays?: number): number {
-  if (!estimatedAgeDays || estimatedAgeDays <= 7) return FEEDING_INTERVAL_HOURS.newborn;
-  if (estimatedAgeDays <= 14) return FEEDING_INTERVAL_HOURS.young;
-  return FEEDING_INTERVAL_HOURS.older;
+  if (!estimatedAgeDays || estimatedAgeDays <= 7) return 2;  // 0–1 week: every 2h
+  if (estimatedAgeDays <= 14) return 3;                      // 1–2 weeks: every 3h
+  if (estimatedAgeDays <= 21) return 4;                      // 2–3 weeks: every 4h
+  if (estimatedAgeDays <= 28) return 5;                      // 3–4 weeks: every 5h
+  return 6;                                                  // 4+ weeks: every 6h (transitioning)
 }
 
 // ── Pure alert computation (no I/O) ──────────────────────────────────────────
@@ -29,7 +30,6 @@ function alertsFromData({
   intervalHours,
   sortedWeightsDesc,
   weekFeedings,
-  recentFeedings,
   last24hFeedings,
   activeMeds,
   getLatestAdmin,
@@ -39,7 +39,6 @@ function alertsFromData({
   intervalHours: number;
   sortedWeightsDesc: WeightEntry[];
   weekFeedings: Feeding[];
-  recentFeedings: Feeding[];
   last24hFeedings: Feeding[];
   activeMeds: Medication[];
   getLatestAdmin: (medId: string) => MedicationAdministration | null | undefined;
@@ -72,19 +71,17 @@ function alertsFromData({
     }
   }
 
-  // Feeding alerts
-  if (recentFeedings.length === 0) {
-    const latestFeeding = weekFeedings.reduce<Feeding | undefined>(
-      (best, f) => (!best || f.timestamp > best.timestamp ? f : best),
-      undefined,
-    );
-    if (!latestFeeding || latestFeeding.timestamp < subHours(now, intervalHours)) {
-      alerts.push({
-        id: uuid(), kittenId: kitten.id, kittenName: kitten.name,
-        type: "missed_feeding", severity: "warning",
-        params: { kittenName: kitten.name, hours: intervalHours }, timestamp: now,
-      });
-    }
+  // Feeding alert: fire when the last feeding was more than intervalHours ago
+  const lastFeeding = weekFeedings.reduce<Feeding | undefined>(
+    (best, f) => (!best || f.timestamp > best.timestamp ? f : best),
+    undefined,
+  );
+  if (!lastFeeding || lastFeeding.timestamp < subHours(now, intervalHours)) {
+    alerts.push({
+      id: uuid(), kittenId: kitten.id, kittenName: kitten.name,
+      type: "missed_feeding", severity: "warning",
+      params: { kittenName: kitten.name, hours: intervalHours }, timestamp: now,
+    });
   }
 
   const isFormula = (f: Feeding) => !f.foodType || f.foodType === "formula";
@@ -153,15 +150,12 @@ function buildSummaryFromParts({
     (a, b) => b.timestamp.getTime() - a.timestamp.getTime(),
   );
   const todayFeedings = weekFeedings.filter((f) => f.timestamp >= startOfDay);
-  const recentFeedings = weekFeedings.filter(
-    (f) => f.timestamp >= subHours(now, intervalHours + 1),
-  );
   const last24hFeedings = weekFeedings.filter((f) => f.timestamp >= subHours(now, 24));
 
   const alerts = alertsFromData({
     kitten, now, intervalHours,
     sortedWeightsDesc: sortedWeights,
-    weekFeedings, recentFeedings, last24hFeedings,
+    weekFeedings, last24hFeedings,
     activeMeds, getLatestAdmin,
   });
 
