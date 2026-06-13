@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AvatarUpload } from "@/components/shared/avatar-upload";
 import { useKittenStore } from "@/stores/kitten.store";
 import { useTranslations } from "@/i18n/context";
 import type { Kitten } from "@/domain/types";
@@ -28,7 +29,12 @@ export function KittenForm({ kitten, onSuccess }: KittenFormProps) {
   const t = useTranslations("kitten");
   const tc = useTranslations("common");
 
+  // Stable temp ID for new kittens so the storage path is consistent
+  // even if the user picks a photo before submitting.
+  const [pendingId] = useState(() => crypto.randomUUID());
+
   const [name, setName] = useState(kitten?.name ?? "");
+  const [photo, setPhoto] = useState(kitten?.photo);
   const [sex, setSex] = useState<string>(kitten?.sex ?? "unknown");
   const [estimatedAgeDays, setEstimatedAgeDays] = useState(
     kitten?.estimatedAgeDays?.toString() ?? ""
@@ -39,6 +45,15 @@ export function KittenForm({ kitten, onSuccess }: KittenFormProps) {
   const [notes, setNotes] = useState(kitten?.notes ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  const storageId = kitten?.id ?? pendingId;
+
+  async function handlePhotoUploaded(url: string) {
+    setPhoto(url);
+    if (kitten) {
+      await updateKitten(kitten.id, { photo: url });
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,6 +77,7 @@ export function KittenForm({ kitten, onSuccess }: KittenFormProps) {
           estimatedAgeDays: estimatedAgeDays ? parseInt(estimatedAgeDays) : undefined,
           intakeDate: intakeDate ? new Date(intakeDate) : undefined,
           notes: notes.trim() || undefined,
+          photo,
         });
       }
       onSuccess?.() ?? router.push("/");
@@ -77,6 +93,16 @@ export function KittenForm({ kitten, onSuccess }: KittenFormProps) {
       {error && (
         <div className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
       )}
+
+      <div className="flex justify-center pb-1">
+        <AvatarUpload
+          currentUrl={photo}
+          name={name || t("namePlaceholder")}
+          storagePath={`kittens/${storageId}`}
+          onUploaded={handlePhotoUploaded}
+          size="xl"
+        />
+      </div>
 
       <div className="space-y-2">
         <Label htmlFor="name">{t("name")} *</Label>

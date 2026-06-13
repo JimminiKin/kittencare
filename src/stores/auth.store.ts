@@ -77,6 +77,7 @@ interface AuthStore {
   signUpWithPassword: (email: string, password: string, displayName: string) => Promise<string | null>;
   sendMagicLink: (email: string) => Promise<string | null>;
   signOut: () => Promise<void>;
+  updateProfile: (updates: { avatar_url?: string; display_name?: string }) => Promise<string | null>;
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
@@ -145,5 +146,27 @@ export const useAuthStore = create<AuthStore>((set) => ({
   signOut: async () => {
     await getSupabaseClient().auth.signOut();
     set({ user: null });
+  },
+
+  updateProfile: async (updates) => {
+    const { user } = useAuthStore.getState();
+    if (!user) return "Not authenticated";
+    const supabase = getSupabaseClient();
+
+    const { error: dbError } = await supabase
+      .from("profiles")
+      .update(updates)
+      .eq("id", user.id);
+    if (dbError) return dbError.message;
+
+    // Mirror into user_metadata so components can read without a profiles fetch.
+    const metaUpdates: Record<string, string> = {};
+    if (updates.avatar_url !== undefined) metaUpdates.avatar_url = updates.avatar_url;
+    if (updates.display_name !== undefined) metaUpdates.display_name = updates.display_name;
+
+    const { data, error: authError } = await supabase.auth.updateUser({ data: metaUpdates });
+    if (authError) return authError.message;
+    if (data.user) set({ user: data.user });
+    return null;
   },
 }));

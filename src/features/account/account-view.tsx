@@ -5,25 +5,14 @@ import Link from "next/link";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { AvatarUpload } from "@/components/shared/avatar-upload";
 import { useAuthStore } from "@/stores/auth.store";
 import { useTranslations } from "@/i18n/context";
 import { HouseholdSection } from "./household-section";
 
-function Initials({ name }: { name: string }) {
-  const parts = name.trim().split(/\s+/);
-  const letters = parts.length > 1
-    ? parts[0][0] + parts[parts.length - 1][0]
-    : name.slice(0, 2);
-  return (
-    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xl font-bold uppercase">
-      {letters}
-    </div>
-  );
-}
-
 export function AccountView() {
   const router = useRouter();
-  const { user, signOut } = useAuthStore();
+  const { user, signOut, updateProfile } = useAuthStore();
   const t = useTranslations("auth");
   const tc = useTranslations("common");
 
@@ -52,7 +41,13 @@ export function AccountView() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col items-center gap-3 py-4">
-        <Initials name={displayName} />
+        <AvatarUpload
+          currentUrl={user.user_metadata?.avatar_url}
+          name={displayName}
+          storagePath={`users/${user.id}`}
+          onUploaded={(url) => updateProfile({ avatar_url: url })}
+          size="xl"
+        />
         <div className="text-center">
           <p className="font-semibold text-lg">{displayName}</p>
           <p className="text-sm text-muted-foreground">{user.email}</p>
