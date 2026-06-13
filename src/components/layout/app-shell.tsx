@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { BottomNav } from "./bottom-nav";
 import { useKittenStore } from "@/stores/kitten.store";
 import { useAuthStore } from "@/stores/auth.store";
-import { seedDatabase } from "@/db/seed";
 import { I18nProvider } from "@/i18n/context";
 import { MigrationBanner } from "@/components/shared/migration-banner";
 
@@ -17,7 +16,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (isPublic) return;
-    seedDatabase().then(() => fetchKittens());
+    fetchKittens();
   }, [fetchKittens, isPublic]);
 
   useEffect(() => {
