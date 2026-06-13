@@ -12,13 +12,9 @@ import {
 } from "@/db/repositories/supabase/mappers";
 import type { Alert } from "@/domain/types";
 
-const COOLDOWN_MS = 2 * 60 * 60 * 1000;
+export const dynamic = "force-dynamic";
 
-webpush.setVapidDetails(
-  `mailto:${process.env.VAPID_CONTACT_EMAIL ?? "admin@example.com"}`,
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-);
+const COOLDOWN_MS = 2 * 60 * 60 * 1000;
 
 // Vercel cron passes Authorization: Bearer <CRON_SECRET>.
 // Skip auth check when no secret is configured (local dev).
@@ -48,6 +44,12 @@ function alertUrl(alert: Alert): string {
 }
 
 export async function POST(req: NextRequest) {
+  webpush.setVapidDetails(
+    `mailto:${process.env.VAPID_CONTACT_EMAIL ?? "admin@example.com"}`,
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
+    process.env.VAPID_PRIVATE_KEY!
+  );
+
   if (!isAuthorized(req)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
