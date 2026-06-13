@@ -14,11 +14,14 @@ export class SupabaseKittenRepository implements KittenRepository {
   }
 
   async getAll(): Promise<Kitten[]> {
-    const { data } = await this.db
+    const hid = this.hid;
+    const { data, error } = await this.db
       .from("kittens")
       .select("*")
-      .eq("household_id", this.hid)
+      .eq("household_id", hid)
       .order("created_at", { ascending: false });
+    console.log("[kittens] getAll hid:", hid, "rows:", data?.length ?? 0, "error:", error);
+    if (error) throw new Error(error.message);
     return (data ?? []).map(rowToKitten);
   }
 
