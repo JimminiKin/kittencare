@@ -199,7 +199,8 @@
     "missed_feeding": "{kittenName} non è stato nutrito da più di {hours}h",
     "low_daily_intake": "L'apporto di {kittenName} oggi ({todayMl}ml) è molto al di sotto della media ({avgMl}ml/giorno)",
     "medication_due": "Il {medicationName} di {kittenName} è in scadenza ora",
-    "medication_overdue": "Il {medicationName} di {kittenName} ha {overdueHours}h di ritardo"
+    "medication_overdue": "Il {medicationName} di {kittenName} ha {overdueHours}h di ritardo",
+    "fixIt": "Correggi"
   },
   "timePicker": {
     "nowPrompt": "Adesso — registrare per prima?",

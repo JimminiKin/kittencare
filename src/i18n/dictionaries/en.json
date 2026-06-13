@@ -199,7 +199,8 @@
     "missed_feeding": "{kittenName} has not been fed in over {hours}h",
     "low_daily_intake": "{kittenName}'s intake today ({todayMl}ml) is well below average ({avgMl}ml/day)",
     "medication_due": "{kittenName}'s {medicationName} is due now",
-    "medication_overdue": "{kittenName}'s {medicationName} is {overdueHours}h overdue"
+    "medication_overdue": "{kittenName}'s {medicationName} is {overdueHours}h overdue",
+    "fixIt": "Fix it"
   },
   "timePicker": {
     "nowPrompt": "Now — log for earlier?",
