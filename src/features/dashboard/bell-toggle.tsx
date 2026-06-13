@@ -1,32 +1,72 @@
 "use client";
 
 import { Bell, BellOff } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNotificationStore } from "@/stores/notification.store";
-import {
-  isNotificationSupported,
-  requestNotificationPermission,
-  getNotificationPermission,
-} from "@/lib/notifications";
+import { useAuthStore } from "@/stores/auth.store";
 import { useTranslations } from "@/i18n/context";
+import {
+  isPushSupported,
+  registerSW,
+  subscribeToPush,
+  getExistingSubscription,
+  unsubscribeFromPush,
+  saveSubscription,
+  deleteSubscription,
+} from "@/lib/push";
+import { requestNotificationPermission, getNotificationPermission } from "@/lib/notifications";
 
 export function BellToggle() {
   const { enabled, setEnabled } = useNotificationStore();
+  const { user } = useAuthStore();
   const tn = useTranslations("notifications");
+  const [active, setActive] = useState(false);
 
-  if (!isNotificationSupported()) return null;
+  // Register SW on mount and derive active state from existing subscription.
+  useEffect(() => {
+    if (!isPushSupported()) return;
+    registerSW().then(async () => {
+      const sub = await getExistingSubscription();
+      setActive(!!sub && enabled);
+    });
+  }, [enabled]);
 
-  const active = enabled && getNotificationPermission() === "granted";
+  if (!isPushSupported()) return null;
+
+  const isBlocked = getNotificationPermission() === "denied";
 
   const toggle = async () => {
-    if (enabled) { setEnabled(false); return; }
-    if (getNotificationPermission() === "granted") { setEnabled(true); return; }
-    if (await requestNotificationPermission() === "granted") setEnabled(true);
+    if (active) {
+      // Disable: unsubscribe from push and remove from DB.
+      const sub = await getExistingSubscription();
+      if (sub && user) await deleteSubscription(sub);
+      await unsubscribeFromPush();
+      setEnabled(false);
+      setActive(false);
+      return;
+    }
+
+    // Enable: request permission, subscribe, save.
+    const permission =
+      getNotificationPermission() === "granted"
+        ? "granted"
+        : await requestNotificationPermission();
+
+    if (permission !== "granted") return;
+
+    await registerSW();
+    const sub = await subscribeToPush();
+    if (!sub) return;
+
+    if (user) await saveSubscription(sub);
+    setEnabled(true);
+    setActive(true);
   };
 
   const title = active
     ? tn("disable")
-    : getNotificationPermission() === "denied"
+    : isBlocked
     ? tn("blocked")
     : tn("enable");
 
