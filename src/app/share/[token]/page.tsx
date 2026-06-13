@@ -20,6 +20,7 @@ export async function generateMetadata({
   if (share.expires_at && new Date(share.expires_at) < new Date()) return {};
 
   const name = (share.kittens as any)?.name ?? "Kitten";
+  const base = process.env.NEXT_PUBLIC_BASE_URL ?? "https://easykitty.care";
 
   return {
     title: `${name}'s Care Record · Easy Kitty Care`,
@@ -28,6 +29,7 @@ export async function generateMetadata({
       title: `${name}'s Care Record`,
       description: `View ${name}'s health and care information.`,
       type: "website",
+      url: `${base}/share/${token}`,
     },
     twitter: {
       card: "summary_large_image",
