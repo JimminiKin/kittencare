@@ -24,6 +24,7 @@ import {
 import { useKittenStore } from "@/stores/kitten.store";
 import { useCareStore } from "@/stores/care.store";
 import { useProfiles } from "@/hooks/use-profiles";
+import { ShareSection } from "./share-section";
 import { buildKittenSummary } from "@/services/alert.service";
 import { getRepositories } from "@/db/index";
 import { formatWeight, formatWeightChange } from "@/lib/utils";
@@ -329,6 +330,8 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
           <Link href={`/medications?kittenId=${kitten.id}`}><Pill className="h-4 w-4 mr-2" />{t("medications")}</Link>
         </Button>
       </div>
+
+      <ShareSection kittenId={kitten.id} kittenName={kitten.name} />
 
       {kitten.status === "active" && (
         <div className="pt-4 border-t">

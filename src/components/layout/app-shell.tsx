@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { BottomNav } from "./bottom-nav";
 import { useKittenStore } from "@/stores/kitten.store";
 import { useAuthStore } from "@/stores/auth.store";
@@ -11,14 +12,21 @@ import { MigrationBanner } from "@/components/shared/migration-banner";
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { fetchKittens } = useKittenStore();
   const { init: initAuth } = useAuthStore();
+  const pathname = usePathname();
+  const isPublic = pathname?.startsWith("/share");
 
   useEffect(() => {
+    if (isPublic) return;
     seedDatabase().then(() => fetchKittens());
-  }, [fetchKittens]);
+  }, [fetchKittens, isPublic]);
 
   useEffect(() => {
     return initAuth();
   }, [initAuth]);
+
+  if (isPublic) {
+    return <I18nProvider>{children}</I18nProvider>;
+  }
 
   return (
     <I18nProvider>
