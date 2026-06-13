@@ -45,6 +45,7 @@ export function QuickFeedView({ defaultKittenId }: QuickFeedViewProps) {
   const [timestamp, setTimestamp] = useState<Date>(new Date());
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const FOOD_TYPES: { value: FoodType; label: string; emoji: string }[] = [
     { value: "formula", label: t("formula"), emoji: "🍼" },
@@ -67,32 +68,40 @@ export function QuickFeedView({ defaultKittenId }: QuickFeedViewProps) {
   const handleSave = async () => {
     if (!kittenId) return;
     setSaving(true);
+    setError(null);
     try {
       await addFeeding({
         kittenId,
         timestamp,
         foodType,
+        notes: notes.trim() || undefined,
         ...(foodType === "formula"
           ? { method, amountConsumedMl: amountMl }
           : { amountConsumedGrams: amountGrams }),
       });
       if (pee || poo) {
-        await addElimination({
-          kittenId,
-          timestamp,
-          pee,
-          poo,
-          notes: notes.trim() || undefined,
-        });
+        await addElimination({ kittenId, timestamp, pee, poo });
       }
       setSaved(true);
       setTimeout(() => {
         router.push(defaultKittenId ? `/kittens/${kittenId}` : "/");
       }, 800);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save feeding");
     } finally {
       setSaving(false);
     }
   };
+
+  if (activeKittens.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
+        <div className="text-5xl">🐱</div>
+        <p className="font-semibold">{tc("loading")}</p>
+        <p className="text-sm text-muted-foreground">No active kittens found. Try refreshing.</p>
+      </div>
+    );
+  }
 
   if (saved) {
     return (
@@ -239,6 +248,8 @@ export function QuickFeedView({ defaultKittenId }: QuickFeedViewProps) {
           rows={2}
         />
       </div>
+
+      {error && <p className="text-sm text-destructive text-center">{error}</p>}
 
       <Button
         size="xl"
