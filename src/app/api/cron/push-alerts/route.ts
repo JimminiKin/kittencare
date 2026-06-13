@@ -69,9 +69,10 @@ export async function POST(req: NextRequest) {
 
   const kittens = kittenRows.map(rowToKitten);
   const kittenIds = kittenRows.map((r) => r.id as string);
+  const householdIds = [...new Set(kittenRows.map((r) => r.household_id as string))];
 
-  // ── 2. Bulk-fetch care data for all kittens in parallel ─────────────────────
-  const [feedRows, weightRows, elimRows, medRows, adminRows, logRows, subRows] =
+  // ── 2. Bulk-fetch care data + household members in parallel ──────────────────
+  const [feedRows, weightRows, elimRows, medRows, adminRows, logRows, memberRows] =
     await Promise.all([
       admin.from("feedings").select("*").in("kitten_id", kittenIds).gte("timestamp", weekAgo),
       admin.from("weight_entries").select("*").in("kitten_id", kittenIds),
@@ -79,28 +80,37 @@ export async function POST(req: NextRequest) {
         .gte("timestamp", new Date(now.setHours(0, 0, 0, 0)).toISOString()),
       admin.from("medications").select("*").in("kitten_id", kittenIds),
       admin.from("medication_administrations").select("*").in("kitten_id", kittenIds),
-      // Alerts sent within the cooldown window
       admin.from("push_alert_log").select("kitten_id, alert_type")
         .in("kitten_id", kittenIds).gte("pushed_at", cooldownSince),
-      // Push subscriptions for all household members of these kittens
-      admin.from("push_subscriptions").select("user_id, endpoint, p256dh, auth_key, household_members!inner(household_id)")
-        .in("household_members.household_id",
-          [...new Set(kittenRows.map((r) => r.household_id as string))]),
+      // push_subscriptions has no FK to household_members, so resolve in two steps:
+      // first get the user_ids that belong to these households...
+      admin.from("household_members").select("user_id, household_id").in("household_id", householdIds),
     ]);
+
+  // ...then fetch subscriptions for those users
+  const memberUserIds = [...new Set((memberRows.data ?? []).map((m) => m.user_id as string))];
+  const subRows = memberUserIds.length
+    ? await admin.from("push_subscriptions").select("user_id, endpoint, p256dh, auth_key").in("user_id", memberUserIds)
+    : { data: [] as { user_id: string; endpoint: string; p256dh: string; auth_key: string }[] };
 
   // ── 3. Build lookup maps ────────────────────────────────────────────────────
   const cooledDown = new Set(
     (logRows.data ?? []).map((l) => `${l.kitten_id}:${l.alert_type}`)
   );
 
-  // Map householdId → subscriptions
-  type SubRow = { endpoint: string; p256dh: string; auth_key: string; household_members: { household_id: string }[] | { household_id: string } };
+  // userId → householdIds (a user can belong to multiple households)
+  const userToHouseholds = new Map<string, string[]>();
+  for (const m of (memberRows.data ?? [])) {
+    const arr = userToHouseholds.get(m.user_id as string) ?? [];
+    arr.push(m.household_id as string);
+    userToHouseholds.set(m.user_id as string, arr);
+  }
+
+  // householdId → subscriptions
+  type SubRow = { endpoint: string; p256dh: string; auth_key: string };
   const householdSubs = new Map<string, SubRow[]>();
-  for (const sub of (subRows.data ?? []) as SubRow[]) {
-    const hids = Array.isArray(sub.household_members)
-      ? sub.household_members.map((h) => h.household_id)
-      : [sub.household_members.household_id];
-    for (const hid of hids) {
+  for (const sub of (subRows.data ?? [])) {
+    for (const hid of (userToHouseholds.get(sub.user_id) ?? [])) {
       const arr = householdSubs.get(hid) ?? [];
       arr.push(sub);
       householdSubs.set(hid, arr);
