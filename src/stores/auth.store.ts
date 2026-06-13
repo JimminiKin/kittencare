@@ -102,7 +102,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
     const { error } = await getSupabaseClient().auth.signUp({
       email,
       password,
-      options: { data: { display_name: displayName } },
+      options: {
+        data: { display_name: displayName },
+        emailRedirectTo: window.location.origin,
+      },
     });
     return error?.message ?? null;
   },
@@ -110,7 +113,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
   sendMagicLink: async (email) => {
     const { error } = await getSupabaseClient().auth.signInWithOtp({
       email,
-      options: { shouldCreateUser: true },
+      options: {
+        shouldCreateUser: true,
+        emailRedirectTo: window.location.origin,
+      },
     });
     return error?.message ?? null;
   },
