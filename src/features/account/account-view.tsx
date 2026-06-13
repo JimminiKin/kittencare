@@ -23,13 +23,9 @@ function Initials({ name }: { name: string }) {
 
 export function AccountView() {
   const router = useRouter();
-  const { user, loading, signOut } = useAuthStore();
+  const { user, signOut } = useAuthStore();
   const t = useTranslations("auth");
   const tc = useTranslations("common");
-
-  if (loading) {
-    return <div className="flex justify-center py-16 text-muted-foreground">{tc("loading")}</div>;
-  }
 
   if (!user) {
     return (

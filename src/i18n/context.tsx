@@ -2,10 +2,13 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { useLocaleStore, LOCALES, type Locale } from "@/stores/locale.store";
+import enDict from "./dictionaries/en.json";
 
 type Dictionary = Record<string, Record<string, string>>;
 
-const cache: Partial<Record<Locale, Dictionary>> = {};
+const cache: Partial<Record<Locale, Dictionary>> = {
+  en: enDict as unknown as Dictionary,
+};
 
 async function loadDictionary(locale: Locale): Promise<Dictionary> {
   if (cache[locale]) return cache[locale]!;
@@ -14,12 +17,12 @@ async function loadDictionary(locale: Locale): Promise<Dictionary> {
   return dict;
 }
 
-const I18nContext = createContext<Dictionary>({});
+const I18nContext = createContext<Dictionary>(enDict as unknown as Dictionary);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const locale = useLocaleStore((s) => s.locale);
   const setLocale = useLocaleStore((s) => s.setLocale);
-  const [dict, setDict] = useState<Dictionary>({});
+  const [dict, setDict] = useState<Dictionary>(enDict as unknown as Dictionary);
 
   // On first mount, default to browser language if the user has no saved preference
   useEffect(() => {

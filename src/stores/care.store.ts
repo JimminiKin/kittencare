@@ -17,6 +17,7 @@ import { computeAllAlerts, buildKittenSummary } from "@/services/alert.service";
 import { fireAlertNotifications } from "@/lib/notifications";
 import { useNotificationStore } from "@/stores/notification.store";
 import type { CreateFeedingInput, CreateWeightEntryInput, CreateEliminationEntryInput, CreateMedicationInput, CreateMedicationAdministrationInput, CreateHealthObservationInput } from "@/domain/validation";
+import { useKittenStore } from "@/stores/kitten.store";
 
 interface CareStore {
   // State
@@ -28,6 +29,7 @@ interface CareStore {
   healthObservations: HealthObservation[];
   alerts: Alert[];
   summaries: KittenSummary[];
+  summariesLoaded: boolean;
   loading: boolean;
   error: string | null;
 
@@ -77,6 +79,7 @@ export const useCareStore = create<CareStore>((set, get) => ({
   healthObservations: [],
   alerts: [],
   summaries: [],
+  summariesLoaded: false,
   loading: false,
   error: null,
 
@@ -118,11 +121,11 @@ export const useCareStore = create<CareStore>((set, get) => ({
 
   refreshSummaries: async () => {
     const repos = getRepositories();
-    const kittens = await repos.kittens.getActive();
-    const summaries = await Promise.all(
-      kittens.map((k) => buildKittenSummary(k, repos))
-    );
-    set({ summaries });
+    const stored = useKittenStore.getState().kittens.filter((k) => k.status === "active");
+    const kittens = stored.length > 0 ? stored : await repos.kittens.getActive();
+    const results = await Promise.allSettled(kittens.map((k) => buildKittenSummary(k, repos)));
+    const summaries = results.flatMap((r) => (r.status === "fulfilled" ? [r.value] : []));
+    set({ summaries, summariesLoaded: true });
   },
 
   addFeeding: async (input) => {

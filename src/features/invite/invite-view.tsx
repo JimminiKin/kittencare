@@ -15,7 +15,7 @@ interface InviteDetails {
 
 export function InviteView({ token }: { token: string }) {
   const router = useRouter();
-  const { user, loading: authLoading } = useAuthStore();
+  const { user } = useAuthStore();
   const t = useTranslations("invite");
   const tc = useTranslations("common");
 
@@ -53,7 +53,7 @@ export function InviteView({ token }: { token: string }) {
     setTimeout(() => router.push("/"), 2000);
   }
 
-  if (authLoading || (!invite && !errorKey)) {
+  if (!invite && !errorKey) {
     return <div className="flex justify-center py-16 text-muted-foreground">{tc("loading")}</div>;
   }
 

@@ -7,10 +7,8 @@ import { useAuthStore } from "@/stores/auth.store";
 import { useTranslations } from "@/i18n/context";
 
 export function UserChip() {
-  const { user, loading } = useAuthStore();
+  const { user } = useAuthStore();
   const t = useTranslations("auth");
-
-  if (loading) return null;
 
   if (!user) {
     return (

@@ -32,7 +32,7 @@ export const useKittenStore = create<KittenStore>((set, get) => ({
   selectedKittenId: null,
 
   fetchKittens: async () => {
-    set({ loading: true, error: null });
+    if (get().kittens.length === 0) set({ loading: true, error: null });
     try {
       const kittens = await getRepositories().kittens.getAll();
       set({ kittens, loading: false });

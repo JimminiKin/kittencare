@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Plus, RefreshCw } from "lucide-react";
@@ -18,14 +17,13 @@ const BellToggle = dynamic(
 );
 
 export function DashboardView() {
-  const { summaries, refreshSummaries, refreshAlerts } = useCareStore();
-  const { loading } = useKittenStore();
+  const { summaries, summariesLoaded, refreshSummaries, refreshAlerts } = useCareStore();
+  const { loading, kittens } = useKittenStore();
   const t = useTranslations("dashboard");
 
-  useEffect(() => {
-    refreshSummaries();
-    refreshAlerts();
-  }, [refreshSummaries, refreshAlerts]);
+  const activeCount = kittens.filter((k) => k.status === "active").length;
+  // True while kittens are known but the first refreshSummaries hasn't completed yet
+  const summariesPending = !loading && activeCount > 0 && !summariesLoaded;
 
   const allAlerts = summaries.flatMap((s) => s.alerts);
 
@@ -36,9 +34,9 @@ export function DashboardView() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold">
-            {summaries.length === 1
-              ? t("activeOne", { count: summaries.length })
-              : t("activeMany", { count: summaries.length })}
+            {(summariesPending ? activeCount : summaries.length) === 1
+              ? t("activeOne", { count: summariesPending ? activeCount : summaries.length })
+              : t("activeMany", { count: summariesPending ? activeCount : summaries.length })}
           </h2>
         </div>
         <div className="flex gap-2 items-center">
@@ -61,9 +59,9 @@ export function DashboardView() {
         </div>
       </div>
 
-      {loading ? (
+      {loading || summariesPending ? (
         <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
+          {Array.from({ length: activeCount || 2 }).map((_, i) => (
             <div key={i} className="h-36 rounded-2xl bg-muted animate-pulse" />
           ))}
         </div>
@@ -89,7 +87,7 @@ export function DashboardView() {
         </div>
       )}
 
-      {summaries.length > 0 && (
+      {(summaries.length > 0 || summariesPending) && (
         <div className="fixed bottom-24 right-4 flex flex-col gap-3">
           <Button
             size="xl"

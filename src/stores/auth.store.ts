@@ -44,6 +44,7 @@ async function activateCloud(userId: string): Promise<void> {
     const householdId = await ensureHousehold(userId);
     if (!householdId) {
       console.error("[auth] Could not resolve household — staying in local mode");
+      useAuthStore.setState({ ready: true });
       return;
     }
     console.log("[auth] activateCloud household:", householdId);
@@ -52,11 +53,13 @@ async function activateCloud(userId: string): Promise<void> {
     setUseCloudRepositories(true);
 
     await useKittenStore.getState().fetchKittens();
-    await useCareStore.getState().refreshSummaries();
+    // Unlock the UI as soon as kittens are available; summaries stream in next
+    useAuthStore.setState({ ready: true });
+    useCareStore.getState().refreshSummaries().catch(console.error);
 
     startRealtime(householdId, userId, {
-      onKittensChange: () => {
-        useKittenStore.getState().fetchKittens();
+      onKittensChange: async () => {
+        await useKittenStore.getState().fetchKittens();
         useCareStore.getState().refreshSummaries();
       },
       onEventsChange: (kittenId, _table) => {
@@ -70,6 +73,9 @@ async function activateCloud(userId: string): Promise<void> {
         care.loadHealthForKitten(selectedId);
       },
     });
+  } catch (err) {
+    console.error("[auth] activateCloud error:", err);
+    useAuthStore.setState({ ready: true });
   } finally {
     _activating = false;
   }
@@ -77,7 +83,7 @@ async function activateCloud(userId: string): Promise<void> {
 
 interface AuthStore {
   user: User | null;
-  loading: boolean;
+  ready: boolean;
   init: () => () => void;
   signInWithPassword: (email: string, password: string) => Promise<string | null>;
   signUpWithPassword: (email: string, password: string, displayName: string) => Promise<string | null>;
@@ -87,21 +93,30 @@ interface AuthStore {
 
 export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
-  loading: true,
+  ready: false,
 
   init: () => {
     const supabase = getSupabaseClient();
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        set({ user: session?.user ?? null, loading: false });
         if (session?.user && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
-          activateCloud(session.user.id).catch(console.error);
+          // Reset to skeleton while data loads; activateCloud sets ready: true when done
+          set({ user: session.user, ready: false });
+          activateCloud(session.user.id);
+        } else if (!session?.user && event === "INITIAL_SESSION") {
+          // If auth params are in the URL a SIGNED_IN is imminent — keep skeleton
+          const href = typeof window !== "undefined" ? window.location.href : "";
+          const hasPendingAuth = href.includes("code=") || href.includes("access_token");
+          set({ user: null, ready: !hasPendingAuth });
         }
         if (event === "SIGNED_OUT") {
           stopRealtime();
           setSessionContext(null);
           setUseCloudRepositories(false);
           _activating = false;
+          useCareStore.setState({ summaries: [], summariesLoaded: false });
+          useKittenStore.setState({ kittens: [], loading: false });
+          set({ user: null, ready: true });
         }
       }
     );

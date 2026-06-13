@@ -59,6 +59,7 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
     eliminations,
     administrations,
     healthObservations,
+    summaries: storeSummaries,
     loadFeedingsForKitten,
     loadWeightsForKitten,
     loadEliminationsForKitten,
@@ -71,7 +72,13 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
     deleteHealthObservation,
   } = useCareStore();
 
-  const [summary, setSummary] = useState<KittenSummary | null>(null);
+  // Use the pre-built summary from the care store as the immediate value;
+  // buildKittenSummary will replace it once care data loads
+  const storeSummary = storeSummaries.find((s) => s.kitten.id === kittenId) ?? null;
+  const [localSummary, setLocalSummary] = useState<KittenSummary | null>(null);
+  const summary = localSummary ?? storeSummary;
+
+  const [careLoading, setCareLoading] = useState(true);
   const [editTarget, setEditTarget] = useState<TimelineEvent | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<TimelineEvent | null>(null);
   const [deletingKitten, setDeletingKitten] = useState(false);
@@ -87,16 +94,19 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
 
   useEffect(() => {
     if (!kittenId) return;
-    loadFeedingsForKitten(kittenId);
-    loadWeightsForKitten(kittenId);
-    loadEliminationsForKitten(kittenId);
-    loadMedicationsForKitten(kittenId);
-    loadHealthForKitten(kittenId);
+    setCareLoading(true);
+    Promise.all([
+      loadFeedingsForKitten(kittenId),
+      loadWeightsForKitten(kittenId),
+      loadEliminationsForKitten(kittenId),
+      loadMedicationsForKitten(kittenId),
+      loadHealthForKitten(kittenId),
+    ]).finally(() => setCareLoading(false));
   }, [kittenId, loadFeedingsForKitten, loadWeightsForKitten, loadEliminationsForKitten, loadMedicationsForKitten, loadHealthForKitten]);
 
   useEffect(() => {
     if (!kitten) return;
-    buildKittenSummary(kitten, getRepositories()).then(setSummary);
+    buildKittenSummary(kitten, getRepositories()).then(setLocalSummary);
   }, [kitten, feedings, weights]);
 
   if (!kitten) {
@@ -207,7 +217,13 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
         </Button>
       </div>
 
-      {summary && (
+      {!summary ? (
+        <div className="grid grid-cols-4 gap-2">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-16 rounded-xl bg-muted animate-pulse" />
+          ))}
+        </div>
+      ) : (
         <div className="grid grid-cols-4 gap-2">
           <StatTile
             icon={<Scale className="h-4 w-4 text-violet-500" />}
@@ -248,7 +264,13 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
         </TabsList>
 
         <TabsContent value="timeline" className="space-y-1 mt-3">
-          {timeline.length === 0 ? (
+          {careLoading ? (
+            <div className="space-y-2 py-1">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="h-10 rounded-lg bg-muted animate-pulse" />
+              ))}
+            </div>
+          ) : timeline.length === 0 ? (
             <p className="text-center text-muted-foreground py-8 text-sm">{t("noEvents")}</p>
           ) : (
             timeline.map((event, i) => (
