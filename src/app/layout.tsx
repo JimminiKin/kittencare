@@ -16,6 +16,17 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "Easy Kitty Care",
   },
+  openGraph: {
+    title: "Easy Kitty Care",
+    description: "Track health and care for foster kittens",
+    siteName: "Easy Kitty Care",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Easy Kitty Care",
+    description: "Track health and care for foster kittens",
+  },
 };
 
 export const viewport: Viewport = {
