@@ -43,7 +43,7 @@ function alertUrl(alert: Alert): string {
   return base;
 }
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   webpush.setVapidDetails(
     `mailto:${process.env.VAPID_CONTACT_EMAIL ?? "admin@example.com"}`,
     process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
