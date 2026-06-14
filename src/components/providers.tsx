@@ -32,7 +32,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
         persister,
         maxAge: 24 * 60 * 60 * 1000,
         dehydrateOptions: {
-          shouldDehydrateQuery: (q) => q.state.status === "success",
+          // Don't persist "summaries" — it's derived data computed at runtime from
+          // kittens + care data. A stale empty cache causes a flash of the empty
+          // state on load before the background refetch completes.
+          shouldDehydrateQuery: (q) =>
+            q.state.status === "success" && q.queryKey[0] !== "summaries",
         },
       }}
     >
