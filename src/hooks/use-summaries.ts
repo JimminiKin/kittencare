@@ -45,7 +45,7 @@ export function useSummaries() {
       return results.flatMap((r) => (r.status === "fulfilled" ? [r.value] : []));
     },
     enabled: kittens !== undefined,
-    staleTime: 30_000,
+    staleTime: 0,
   });
 }
 
