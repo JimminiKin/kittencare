@@ -53,7 +53,10 @@
     "medMany": "{count} med.",
     "nextIn": "tra {time}",
     "overdueBy": "{time} in ritardo",
-    "dueNow": "adesso"
+    "dueNow": "adesso",
+    "quickFeed": "Nutri",
+    "quickWeight": "Pesa",
+    "quickMed": "Med"
   },
   "kitten": {
     "addTitle": "Aggiungi gattino",

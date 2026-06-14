@@ -212,7 +212,7 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
           <StatTile
             icon={<Pill className="h-4 w-4 text-rose-500" />}
             label={t("medsLabel")}
-            value={String(summary.activeMedications)}
+            value={String(summary.activeMedications.length)}
             sub={t("activeLabel")}
           />
         </div>

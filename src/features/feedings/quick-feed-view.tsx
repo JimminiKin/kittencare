@@ -18,6 +18,7 @@ import { PastTimePicker } from "@/components/shared/past-time-picker";
 import { useKittens } from "@/hooks/use-kittens";
 import { useCareStore } from "@/stores/care.store";
 import { useTranslations } from "@/i18n/context";
+import { getRepositories } from "@/db/index";
 import type { FeedingMethod, FoodType } from "@/domain/types";
 import { cn } from "@/lib/utils";
 
@@ -65,6 +66,21 @@ export function QuickFeedView({ defaultKittenId }: QuickFeedViewProps) {
     }
   }, [activeKittens, kittenId, defaultKittenId]);
 
+  useEffect(() => {
+    if (!kittenId) return;
+    getRepositories().feedings.getRecentForKitten(kittenId, 1).then((recent) => {
+      const last = recent[0];
+      if (!last) return;
+      if (last.foodType) setFoodType(last.foodType);
+      if (!last.foodType || last.foodType === "formula") {
+        if (last.amountConsumedMl) setAmountMl(last.amountConsumedMl);
+        if (last.method) setMethod(last.method);
+      } else {
+        if (last.amountConsumedGrams) setAmountGrams(last.amountConsumedGrams);
+      }
+    });
+  }, [kittenId]);
+
   const handleSave = async () => {
     if (!kittenId) return;
     setSaving(true);
@@ -84,7 +100,7 @@ export function QuickFeedView({ defaultKittenId }: QuickFeedViewProps) {
       }
       setSaved(true);
       setTimeout(() => {
-        router.push(defaultKittenId ? `/kittens/${kittenId}` : "/");
+        router.push("/");
       }, 800);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save feeding");

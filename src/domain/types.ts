@@ -138,7 +138,7 @@ export interface KittenSummary {
   totalConsumedMlToday: number;
   totalConsumedGramsToday: number;
   eliminationsToday: number;
-  activeMedications: number;
+  activeMedications: Medication[];
   alerts: Alert[];
   // When the next feeding is due (or was due, if in the past). Undefined = never fed.
   nextFeedingDueAt?: Date;

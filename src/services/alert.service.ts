@@ -193,7 +193,7 @@ function buildSummaryFromParts({
       .filter((f) => f.foodType === "wet" || f.foodType === "solid")
       .reduce((s, f) => s + (f.amountConsumedGrams ?? 0), 0),
     eliminationsToday: todayEliminations.length,
-    activeMedications: activeMeds.length,
+    activeMedications: activeMeds,
     alerts,
     nextFeedingDueAt,
   };

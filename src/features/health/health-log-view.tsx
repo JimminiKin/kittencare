@@ -120,7 +120,7 @@ export function HealthLogView({ defaultKittenId }: HealthLogViewProps) {
         notes: notes.trim() || undefined,
       });
       setSaved(true);
-      setTimeout(() => router.push(defaultKittenId ? `/kittens/${kittenId}` : "/"), 800);
+      setTimeout(() => router.push("/"), 800);
     } finally {
       setSaving(false);
     }

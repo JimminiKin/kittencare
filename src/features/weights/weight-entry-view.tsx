@@ -64,7 +64,7 @@ export function WeightEntryView({ defaultKittenId }: WeightEntryViewProps) {
     try {
       await addWeight({ kittenId, timestamp, weightGrams });
       setSaved(true);
-      setTimeout(() => router.push(defaultKittenId ? `/kittens/${kittenId}` : "/"), 800);
+      setTimeout(() => router.push("/"), 800);
     } finally {
       setSaving(false);
     }

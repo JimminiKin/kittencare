@@ -59,9 +59,7 @@ export function DashboardCard({ summary }: DashboardCardProps) {
     const diffMs = nextFeedingDueAt.getTime() - now;
     if (diffMs > 0) {
       feedingLabel = tc("nextIn", { time: formatDuration(diffMs) });
-      feedingLabelColor = diffMs < 30 * 60_000
-        ? "text-amber-500"
-        : "text-muted-foreground";
+      feedingLabelColor = diffMs < 30 * 60_000 ? "text-amber-500" : "text-muted-foreground";
     } else {
       const overdueMs = -diffMs;
       if (overdueMs < 2 * 60_000) {
@@ -75,9 +73,10 @@ export function DashboardCard({ summary }: DashboardCardProps) {
   }
 
   return (
-    <Link href={`/kittens/${kitten.id}`}>
-      <Card className={`transition-all active:scale-[0.98] ${criticalAlerts.length > 0 ? "border-red-300 ring-1 ring-red-200" : ""}`}>
-        <CardContent className="p-4">
+    <Card className={criticalAlerts.length > 0 ? "border-red-300 ring-1 ring-red-200" : ""}>
+      <CardContent className="p-4 pb-2">
+        {/* Tappable area navigates to kitten detail */}
+        <Link href={`/kittens/${kitten.id}`} className="block active:opacity-70 transition-opacity">
           <div className="flex items-center gap-3 mb-3">
             <KittenAvatar name={kitten.name} photo={kitten.photo} size="md" />
             <div className="flex-1 min-w-0">
@@ -127,16 +126,40 @@ export function DashboardCard({ summary }: DashboardCardProps) {
                 <Droplets className="h-3.5 w-3.5 text-sky-500" />
                 {eliminationsToday}
               </div>
-              {activeMedications > 0 && (
+              {activeMedications.length > 0 && (
                 <div className="flex items-center justify-center gap-0.5 text-xs text-violet-600">
                   <Pill className="h-3 w-3" />
-                  {activeMedications === 1 ? tc("medOne", { count: activeMedications }) : tc("medMany", { count: activeMedications })}
+                  {activeMedications.length === 1 ? tc("medOne", { count: activeMedications.length }) : tc("medMany", { count: activeMedications.length })}
                 </div>
               )}
             </div>
           </div>
-        </CardContent>
-      </Card>
-    </Link>
+        </Link>
+
+        {/* Quick-action row — navigates to full forms with kitten pre-selected */}
+        <div className="flex gap-2 mt-3 pt-3 border-t">
+          <Link
+            href={`/feed?kittenId=${kitten.id}`}
+            className="flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-semibold text-primary bg-primary/8 hover:bg-primary/15 active:bg-primary/20 transition-colors"
+          >
+            🍼 {tc("quickFeed")}
+          </Link>
+          <Link
+            href={`/weight?kittenId=${kitten.id}`}
+            className="flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-semibold text-muted-foreground bg-muted/60 hover:bg-muted active:bg-muted/80 transition-colors"
+          >
+            ⚖️ {tc("quickWeight")}
+          </Link>
+          {activeMedications.length > 0 && (
+            <Link
+              href={`/medications?kittenId=${kitten.id}`}
+              className="flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-semibold text-violet-700 bg-violet-50 hover:bg-violet-100 active:bg-violet-200 transition-colors"
+            >
+              💊 {tc("quickMed")}
+            </Link>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
