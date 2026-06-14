@@ -14,7 +14,7 @@ export function AuthView() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") ?? "/";
-  const { signInWithPassword, signUpWithPassword, sendMagicLink } = useAuthStore();
+  const { signInWithPassword, signUpWithPassword, sendMagicLink, resetPasswordForEmail } = useAuthStore();
   const t = useTranslations("auth");
 
   const [signInEmail, setSignInEmail] = useState("");
@@ -34,6 +34,12 @@ export function AuthView() {
   const [magicSent, setMagicSent] = useState(false);
   const [magicError, setMagicError] = useState<string | null>(null);
 
+  const [forgotMode, setForgotMode] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotSent, setForgotSent] = useState(false);
+  const [forgotError, setForgotError] = useState<string | null>(null);
+
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
     setSignInError(null);
@@ -52,6 +58,16 @@ export function AuthView() {
     setSignUpLoading(false);
     if (err) { setSignUpError(err); return; }
     setSignUpDone(true);
+  }
+
+  async function handleForgotPassword(e: React.FormEvent) {
+    e.preventDefault();
+    setForgotError(null);
+    setForgotLoading(true);
+    const err = await resetPasswordForEmail(forgotEmail);
+    setForgotLoading(false);
+    if (err) { setForgotError(err); return; }
+    setForgotSent(true);
   }
 
   async function handleMagicLink(e: React.FormEvent) {
@@ -80,60 +96,104 @@ export function AuthView() {
 
           {/* ── Sign in ─────────────────────────────────────────── */}
           <TabsContent value="signin" className="mt-4 space-y-4">
-            <form onSubmit={handleSignIn} className="space-y-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="si-email">{t("email")}</Label>
-                <Input
-                  id="si-email"
-                  type="email"
-                  placeholder={t("emailPlaceholder")}
-                  value={signInEmail}
-                  onChange={(e) => setSignInEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="si-password">{t("password")}</Label>
-                <Input
-                  id="si-password"
-                  type="password"
-                  placeholder={t("passwordPlaceholder")}
-                  value={signInPassword}
-                  onChange={(e) => setSignInPassword(e.target.value)}
-                  required
-                  autoComplete="current-password"
-                />
-              </div>
-              {signInError && <p className="text-sm text-destructive">{signInError}</p>}
-              <Button type="submit" className="w-full" disabled={signInLoading}>
-                {signInLoading ? t("signingIn") : t("signInButton")}
-              </Button>
-            </form>
-
-            <div className="flex items-center gap-2">
-              <Separator className="flex-1" />
-              <span className="text-xs text-muted-foreground">{t("orMagicLink")}</span>
-              <Separator className="flex-1" />
-            </div>
-
-            {magicSent ? (
-              <p className="text-sm text-center text-muted-foreground">{t("magicLinkSent")}</p>
+            {forgotMode ? (
+              forgotSent ? (
+                <p className="text-sm text-center text-muted-foreground py-2">{t("resetLinkSent")}</p>
+              ) : (
+                <form onSubmit={handleForgotPassword} className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="fp-email">{t("email")}</Label>
+                    <Input
+                      id="fp-email"
+                      type="email"
+                      placeholder={t("emailPlaceholder")}
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      required
+                      autoComplete="email"
+                    />
+                  </div>
+                  {forgotError && <p className="text-sm text-destructive">{forgotError}</p>}
+                  <Button type="submit" className="w-full" disabled={forgotLoading}>
+                    {forgotLoading ? t("sending") : t("sendResetLink")}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="w-full text-muted-foreground"
+                    onClick={() => setForgotMode(false)}
+                  >
+                    {t("backToSignIn")}
+                  </Button>
+                </form>
+              )
             ) : (
-              <form onSubmit={handleMagicLink} className="space-y-2">
-                <Input
-                  type="email"
-                  placeholder={t("emailPlaceholder")}
-                  value={magicEmail}
-                  onChange={(e) => setMagicEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                />
-                {magicError && <p className="text-sm text-destructive">{magicError}</p>}
-                <Button type="submit" variant="outline" className="w-full" disabled={magicLoading}>
-                  {magicLoading ? t("sending") : t("sendMagicLink")}
-                </Button>
-              </form>
+              <>
+                <form onSubmit={handleSignIn} className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="si-email">{t("email")}</Label>
+                    <Input
+                      id="si-email"
+                      type="email"
+                      placeholder={t("emailPlaceholder")}
+                      value={signInEmail}
+                      onChange={(e) => setSignInEmail(e.target.value)}
+                      required
+                      autoComplete="email"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="si-password">{t("password")}</Label>
+                      <button
+                        type="button"
+                        className="text-xs text-muted-foreground hover:text-foreground underline-offset-2 hover:underline"
+                        onClick={() => { setForgotEmail(signInEmail); setForgotMode(true); }}
+                      >
+                        {t("forgotPassword")}
+                      </button>
+                    </div>
+                    <Input
+                      id="si-password"
+                      type="password"
+                      placeholder={t("passwordPlaceholder")}
+                      value={signInPassword}
+                      onChange={(e) => setSignInPassword(e.target.value)}
+                      required
+                      autoComplete="current-password"
+                    />
+                  </div>
+                  {signInError && <p className="text-sm text-destructive">{signInError}</p>}
+                  <Button type="submit" className="w-full" disabled={signInLoading}>
+                    {signInLoading ? t("signingIn") : t("signInButton")}
+                  </Button>
+                </form>
+
+                <div className="flex items-center gap-2">
+                  <Separator className="flex-1" />
+                  <span className="text-xs text-muted-foreground">{t("orMagicLink")}</span>
+                  <Separator className="flex-1" />
+                </div>
+
+                {magicSent ? (
+                  <p className="text-sm text-center text-muted-foreground">{t("magicLinkSent")}</p>
+                ) : (
+                  <form onSubmit={handleMagicLink} className="space-y-2">
+                    <Input
+                      type="email"
+                      placeholder={t("emailPlaceholder")}
+                      value={magicEmail}
+                      onChange={(e) => setMagicEmail(e.target.value)}
+                      required
+                      autoComplete="email"
+                    />
+                    {magicError && <p className="text-sm text-destructive">{magicError}</p>}
+                    <Button type="submit" variant="outline" className="w-full" disabled={magicLoading}>
+                      {magicLoading ? t("sending") : t("sendMagicLink")}
+                    </Button>
+                  </form>
+                )}
+              </>
             )}
           </TabsContent>
 

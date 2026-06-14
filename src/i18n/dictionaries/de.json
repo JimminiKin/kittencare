@@ -263,7 +263,21 @@
     "localModeHint": "Daten werden nur auf diesem Gerät gespeichert. Melde dich an, um geräteübergreifend zu synchronisieren und mit deinem Haushalt zu teilen.",
     "signInToSync": "Anmelden zum Synchronisieren",
     "householdReady": "Haushalt erstellt — lade Mitglieder in einem zukünftigen Update ein.",
-    "syncComingSoon": "Cloud-Synchronisierung demnächst verfügbar."
+    "syncComingSoon": "Cloud-Synchronisierung demnächst verfügbar.",
+    "forgotPassword": "Passwort vergessen?",
+    "sendResetLink": "Reset-Link senden",
+    "resetLinkSent": "Prüfe deine E-Mails — wir haben dir einen Passwort-Reset-Link geschickt.",
+    "resetPasswordTitle": "Neues Passwort festlegen",
+    "resetLinkInvalid": "Dieser Reset-Link ist ungültig oder abgelaufen.",
+    "backToSignIn": "Zurück zur Anmeldung",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
+    "updatePassword": "Passwort aktualisieren",
+    "updatingPassword": "Wird aktualisiert…",
+    "passwordUpdated": "Passwort erfolgreich aktualisiert",
+    "redirecting": "Du wirst weitergeleitet…",
+    "changePassword": "Passwort ändern"
   },
   "share": {
     "title": "Mit Tierarzt teilen",

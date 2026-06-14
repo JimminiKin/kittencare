@@ -263,7 +263,21 @@
     "localModeHint": "Les données sont stockées sur cet appareil uniquement. Connectez-vous pour synchroniser et partager avec votre foyer.",
     "signInToSync": "Se connecter pour synchroniser",
     "householdReady": "Foyer créé — invitez des membres dans une prochaine mise à jour.",
-    "syncComingSoon": "Synchronisation cloud à venir."
+    "syncComingSoon": "Synchronisation cloud à venir.",
+    "forgotPassword": "Mot de passe oublié ?",
+    "sendResetLink": "Envoyer le lien de réinitialisation",
+    "resetLinkSent": "Vérifiez vos e-mails — nous avons envoyé un lien de réinitialisation.",
+    "resetPasswordTitle": "Définir un nouveau mot de passe",
+    "resetLinkInvalid": "Ce lien de réinitialisation est invalide ou a expiré.",
+    "backToSignIn": "Retour à la connexion",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+    "updatePassword": "Mettre à jour le mot de passe",
+    "updatingPassword": "Mise à jour…",
+    "passwordUpdated": "Mot de passe mis à jour avec succès",
+    "redirecting": "Redirection en cours…",
+    "changePassword": "Changer le mot de passe"
   },
   "share": {
     "title": "Partager avec le vétérinaire",

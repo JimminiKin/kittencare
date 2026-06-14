@@ -263,7 +263,21 @@
     "localModeHint": "Los datos se almacenan solo en este dispositivo. Inicia sesión para sincronizar y compartir con tu hogar.",
     "signInToSync": "Iniciar sesión para sincronizar",
     "householdReady": "Hogar creado — invita miembros en una próxima actualización.",
-    "syncComingSoon": "Sincronización en la nube próximamente."
+    "syncComingSoon": "Sincronización en la nube próximamente.",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "sendResetLink": "Enviar enlace de restablecimiento",
+    "resetLinkSent": "Revisa tu correo — te enviamos un enlace para restablecer tu contraseña.",
+    "resetPasswordTitle": "Establece una nueva contraseña",
+    "resetLinkInvalid": "Este enlace de restablecimiento es inválido o ha expirado.",
+    "backToSignIn": "Volver a iniciar sesión",
+    "newPassword": "Nueva contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "passwordsDoNotMatch": "Las contraseñas no coinciden",
+    "updatePassword": "Actualizar contraseña",
+    "updatingPassword": "Actualizando…",
+    "passwordUpdated": "Contraseña actualizada con éxito",
+    "redirecting": "Redirigiendo ahora…",
+    "changePassword": "Cambiar contraseña"
   },
   "share": {
     "title": "Compartir con el veterinario",

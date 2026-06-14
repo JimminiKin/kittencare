@@ -263,7 +263,21 @@
     "localModeHint": "Data is stored on this device only. Sign in to sync across devices and share with your household.",
     "signInToSync": "Sign in to sync",
     "householdReady": "Household created — invite members in a future update.",
-    "syncComingSoon": "Cloud sync coming soon."
+    "syncComingSoon": "Cloud sync coming soon.",
+    "forgotPassword": "Forgot password?",
+    "sendResetLink": "Send reset link",
+    "resetLinkSent": "Check your email — we sent a password reset link.",
+    "resetPasswordTitle": "Set a new password",
+    "resetLinkInvalid": "This reset link is invalid or has expired.",
+    "backToSignIn": "Back to sign in",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "updatePassword": "Update password",
+    "updatingPassword": "Updating…",
+    "passwordUpdated": "Password updated successfully",
+    "redirecting": "Redirecting you now…",
+    "changePassword": "Change password"
   },
   "share": {
     "title": "Share with vet",

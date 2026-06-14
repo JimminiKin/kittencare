@@ -72,10 +72,13 @@ interface AuthStore {
   user: User | null;
   ready: boolean;
   role: "owner" | "member" | null;
+  isRecovery: boolean;
   init: () => () => void;
   signInWithPassword: (email: string, password: string) => Promise<string | null>;
   signUpWithPassword: (email: string, password: string, displayName: string) => Promise<string | null>;
   sendMagicLink: (email: string) => Promise<string | null>;
+  resetPasswordForEmail: (email: string) => Promise<string | null>;
+  updatePassword: (newPassword: string) => Promise<string | null>;
   signOut: () => Promise<void>;
   updateProfile: (updates: { avatar_url?: string; display_name?: string }) => Promise<string | null>;
 }
@@ -84,12 +87,15 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
   ready: false,
   role: null,
+  isRecovery: false,
 
   init: () => {
     const supabase = getSupabaseClient();
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        if (session?.user && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
+        if (event === "PASSWORD_RECOVERY" && session?.user) {
+          set({ user: session.user, ready: true, isRecovery: true });
+        } else if (session?.user && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
           // Reset to skeleton while data loads; activateCloud sets ready: true when done
           set({ user: session.user, ready: false });
           activateCloud(session.user.id);
@@ -105,7 +111,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           setUseCloudRepositories(false);
           _activating = false;
           getQueryClient().clear();
-          set({ user: null, ready: true, role: null });
+          set({ user: null, ready: true, role: null, isRecovery: false });
         }
       }
     );
@@ -140,6 +146,19 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         emailRedirectTo: window.location.origin,
       },
     });
+    return error?.message ?? null;
+  },
+
+  resetPasswordForEmail: async (email) => {
+    const { error } = await getSupabaseClient().auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset`,
+    });
+    return error?.message ?? null;
+  },
+
+  updatePassword: async (newPassword) => {
+    const { error } = await getSupabaseClient().auth.updateUser({ password: newPassword });
+    if (!error) set({ isRecovery: false });
     return error?.message ?? null;
   },
 
