@@ -90,10 +90,15 @@ export interface HealthObservation {
 
 export type AlertSeverity = "info" | "warning" | "critical";
 
+// "action" = requires immediate caregiver action → triggers push + in-app display
+// "warning" = health observation after data recording → in-app only, no push
+export type AlertCategory = "action" | "warning";
+
 export type AlertType =
   | "weight_loss"
   | "no_weight_gain"
-  | "missed_feeding"
+  | "feeding_due"
+  | "feeding_overdue"
   | "low_daily_intake"
   | "medication_due"
   | "medication_overdue";
@@ -104,6 +109,7 @@ export interface Alert {
   kittenName: string;
   type: AlertType;
   severity: AlertSeverity;
+  category: AlertCategory;
   params: Record<string, string | number>;
   timestamp: Date;
 }

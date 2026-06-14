@@ -196,11 +196,13 @@
   "alerts": {
     "weight_loss": "{kittenName} lost {lostGrams}g since last weigh-in",
     "no_weight_gain": "{kittenName} has not gained significant weight in the last 24h",
-    "missed_feeding": "{kittenName} has not been fed in over {hours}h",
+    "feeding_due": "Feed {kittenName}",
+    "feeding_overdue": "Feed {kittenName} — {overdueHours}h overdue",
     "low_daily_intake": "{kittenName}'s intake today ({todayMl}ml) is well below average ({avgMl}ml/day)",
-    "medication_due": "{kittenName}'s {medicationName} is due now",
-    "medication_overdue": "{kittenName}'s {medicationName} is {overdueHours}h overdue",
-    "fixIt": "Fix it"
+    "medication_due": "Give {medicationName} to {kittenName}",
+    "medication_overdue": "Give {medicationName} to {kittenName} — {overdueHours}h overdue",
+    "fixIt": "View",
+    "doIt": "Do it"
   },
   "timePicker": {
     "nowPrompt": "Now — log for earlier?",

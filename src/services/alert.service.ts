@@ -52,7 +52,7 @@ function alertsFromData({
     if (latest.weightGrams < previous.weightGrams) {
       alerts.push({
         id: uuid(), kittenId: kitten.id, kittenName: kitten.name,
-        type: "weight_loss", severity: "critical",
+        type: "weight_loss", severity: "critical", category: "warning",
         params: { kittenName: kitten.name, lostGrams: previous.weightGrams - latest.weightGrams },
         timestamp: now,
       });
@@ -64,23 +64,32 @@ function alertsFromData({
       if (max - min < 5) {
         alerts.push({
           id: uuid(), kittenId: kitten.id, kittenName: kitten.name,
-          type: "no_weight_gain", severity: "warning",
+          type: "no_weight_gain", severity: "warning", category: "warning",
           params: { kittenName: kitten.name }, timestamp: now,
         });
       }
     }
   }
 
-  // Feeding alert: fire when the last feeding was more than intervalHours ago
+  // Feeding alerts: mirrors medication_due / medication_overdue logic
   const lastFeeding = weekFeedings.reduce<Feeding | undefined>(
     (best, f) => (!best || f.timestamp > best.timestamp ? f : best),
     undefined,
   );
-  if (!lastFeeding || lastFeeding.timestamp < subHours(now, intervalHours)) {
+  const feedingDueAt = lastFeeding
+    ? new Date(lastFeeding.timestamp.getTime() + intervalHours * 3_600_000)
+    : new Date(0); // no feeding recorded → always overdue
+  if (feedingDueAt <= now) {
+    const overdueHours = (now.getTime() - feedingDueAt.getTime()) / 3_600_000;
     alerts.push({
       id: uuid(), kittenId: kitten.id, kittenName: kitten.name,
-      type: "missed_feeding", severity: "warning",
-      params: { kittenName: kitten.name, hours: intervalHours }, timestamp: now,
+      type: overdueHours > 1 ? "feeding_overdue" : "feeding_due",
+      severity: overdueHours > 1 ? "critical" : "warning",
+      category: "action",
+      params: overdueHours > 1
+        ? { kittenName: kitten.name, overdueHours: Math.round(overdueHours) }
+        : { kittenName: kitten.name },
+      timestamp: now,
     });
   }
 
@@ -94,7 +103,7 @@ function alertsFromData({
     if (weekAvg > 0 && todayMl < weekAvg * 0.6) {
       alerts.push({
         id: uuid(), kittenId: kitten.id, kittenName: kitten.name,
-        type: "low_daily_intake", severity: "warning",
+        type: "low_daily_intake", severity: "warning", category: "warning",
         params: { kittenName: kitten.name, todayMl, avgMl: Math.round(weekAvg) },
         timestamp: now,
       });
@@ -113,6 +122,7 @@ function alertsFromData({
         id: uuid(), kittenId: kitten.id, kittenName: kitten.name,
         type: overdueHours > 1 ? "medication_overdue" : "medication_due",
         severity: overdueHours > 1 ? "critical" : "warning",
+        category: "action",
         params:
           overdueHours > 1
             ? { kittenName: kitten.name, medicationName: med.name, overdueHours: Math.round(overdueHours) }

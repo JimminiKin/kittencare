@@ -51,7 +51,7 @@ export async function fireAlertNotifications(alerts: Alert[]): Promise<void> {
 
   let changed = false;
 
-  for (const alert of alerts) {
+  for (const alert of alerts.filter((a) => a.category === "action")) {
     const key = `${alert.kittenId}:${alert.type}`;
     if ((cache[key] ?? 0) + COOLDOWN_MS > now) continue;
 

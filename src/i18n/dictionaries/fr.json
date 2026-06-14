@@ -196,11 +196,13 @@
   "alerts": {
     "weight_loss": "{kittenName} a perdu {lostGrams}g depuis la dernière pesée",
     "no_weight_gain": "{kittenName} n'a pas pris de poids significatif en 24h",
-    "missed_feeding": "{kittenName} n'a pas été nourri depuis plus de {hours}h",
+    "feeding_due": "Nourrissez {kittenName}",
+    "feeding_overdue": "Nourrissez {kittenName} — {overdueHours}h de retard",
     "low_daily_intake": "L'apport de {kittenName} aujourd'hui ({todayMl}ml) est bien inférieur à la moyenne ({avgMl}ml/jour)",
-    "medication_due": "Le {medicationName} de {kittenName} est dû maintenant",
-    "medication_overdue": "Le {medicationName} de {kittenName} a {overdueHours}h de retard",
-    "fixIt": "Corriger"
+    "medication_due": "Donnez {medicationName} à {kittenName}",
+    "medication_overdue": "Donnez {medicationName} à {kittenName} — {overdueHours}h de retard",
+    "fixIt": "Voir",
+    "doIt": "Agir"
   },
   "timePicker": {
     "nowPrompt": "Maintenant — saisir pour une heure passée ?",

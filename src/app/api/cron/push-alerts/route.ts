@@ -34,7 +34,7 @@ function alertBody(alert: Alert): string {
 
 function alertUrl(alert: Alert): string {
   const base = `/kittens/${alert.kittenId}`;
-  if (alert.type === "missed_feeding" || alert.type === "low_daily_intake")
+  if (alert.type === "feeding_due" || alert.type === "feeding_overdue" || alert.type === "low_daily_intake")
     return `/feed?kittenId=${alert.kittenId}`;
   if (alert.type === "weight_loss" || alert.type === "no_weight_gain")
     return `/weight?kittenId=${alert.kittenId}`;
@@ -148,7 +148,7 @@ export async function GET(req: NextRequest) {
     const subs = householdSubs.get(householdId) ?? [];
     if (!subs.length) continue;
 
-    for (const alert of alerts) {
+    for (const alert of alerts.filter((a) => a.category === "action")) {
       const key = `${alert.kittenId}:${alert.type}`;
       if (cooledDown.has(key)) continue;
 

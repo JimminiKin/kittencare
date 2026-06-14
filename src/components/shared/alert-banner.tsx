@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, AlertCircle, Info, X } from "lucide-react";
+import { AlertTriangle, AlertCircle, Info, Zap, X } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import type { Alert, AlertType } from "@/domain/types";
@@ -17,28 +17,37 @@ const severityConfig = {
     bg: "bg-blue-50 border-blue-200",
     text: "text-blue-800",
     iconColor: "text-blue-500",
-    fixItClass: "bg-blue-600 text-white hover:bg-blue-700 shadow-sm",
+    btnClass: "bg-blue-600 text-white hover:bg-blue-700 shadow-sm",
   },
   warning: {
     icon: AlertTriangle,
     bg: "bg-amber-50 border-amber-200",
     text: "text-amber-800",
     iconColor: "text-amber-500",
-    fixItClass: "bg-amber-500 text-white hover:bg-amber-600 shadow-sm",
+    btnClass: "bg-amber-500 text-white hover:bg-amber-600 shadow-sm",
   },
   critical: {
     icon: AlertCircle,
     bg: "bg-red-50 border-red-200",
     text: "text-red-800",
     iconColor: "text-red-500",
-    fixItClass: "bg-red-600 text-white hover:bg-red-700 shadow-sm",
+    btnClass: "bg-red-600 text-white hover:bg-red-700 shadow-sm",
   },
+};
+
+const actionConfig = {
+  icon: Zap,
+  bg: "bg-violet-50 border-violet-200",
+  text: "text-violet-800",
+  iconColor: "text-violet-500",
+  btnClass: "bg-violet-600 text-white hover:bg-violet-700 shadow-sm",
 };
 
 const alertRoute: Record<AlertType, string> = {
   weight_loss: "/weight",
   no_weight_gain: "/weight",
-  missed_feeding: "/feed",
+  feeding_due: "/feed",
+  feeding_overdue: "/feed",
   low_daily_intake: "/feed",
   medication_due: "/medications",
   medication_overdue: "/medications",
@@ -54,9 +63,10 @@ export function AlertBanner({ alerts }: AlertBannerProps) {
   return (
     <div className="space-y-2">
       {visible.map((alert) => {
-        const config = severityConfig[alert.severity];
+        const config = alert.category === "action" ? actionConfig : severityConfig[alert.severity];
         const Icon = config.icon;
         const href = `${alertRoute[alert.type]}?kittenId=${alert.kittenId}`;
+        const btnLabel = alert.category === "action" ? t("doIt") : t("fixIt");
         return (
           <div
             key={alert.id}
@@ -74,10 +84,10 @@ export function AlertBanner({ alerts }: AlertBannerProps) {
               href={href}
               className={cn(
                 "shrink-0 inline-flex items-center rounded-md px-3 py-1.5 text-xs font-semibold transition-colors",
-                config.fixItClass
+                config.btnClass
               )}
             >
-              {t("fixIt")}
+              {btnLabel}
             </Link>
             <button
               onClick={() => setDismissed((s) => new Set(s).add(alert.id))}
