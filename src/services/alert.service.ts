@@ -169,6 +169,14 @@ function buildSummaryFromParts({
     activeMeds, getLatestAdmin,
   });
 
+  const lastFeeding = weekFeedings.reduce<Feeding | undefined>(
+    (best, f) => (!best || f.timestamp > best.timestamp ? f : best),
+    undefined,
+  );
+  const nextFeedingDueAt = lastFeeding
+    ? new Date(lastFeeding.timestamp.getTime() + intervalHours * 3_600_000)
+    : undefined;
+
   const isFormula = (f: Feeding) => !f.foodType || f.foodType === "formula";
   return {
     kitten,
@@ -187,6 +195,7 @@ function buildSummaryFromParts({
     eliminationsToday: todayEliminations.length,
     activeMedications: activeMeds.length,
     alerts,
+    nextFeedingDueAt,
   };
 }
 

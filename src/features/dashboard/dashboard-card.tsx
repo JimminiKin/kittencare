@@ -14,8 +14,17 @@ interface DashboardCardProps {
   summary: KittenSummary;
 }
 
+function formatDuration(ms: number): string {
+  const totalMin = Math.floor(ms / 60_000);
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  if (h === 0) return `${m}m`;
+  if (m === 0) return `${h}h`;
+  return `${h}h ${m}m`;
+}
+
 export function DashboardCard({ summary }: DashboardCardProps) {
-  const { kitten, currentWeightGrams, weightChangeGrams, feedingsToday, totalConsumedMlToday, eliminationsToday, activeMedications, alerts } = summary;
+  const { kitten, currentWeightGrams, weightChangeGrams, feedingsToday, eliminationsToday, activeMedications, alerts, nextFeedingDueAt } = summary;
   const tc = useTranslations("card");
   const formatAge = useFormatAge();
 
@@ -38,6 +47,32 @@ export function DashboardCard({ summary }: DashboardCardProps) {
     : weightChangeGrams < 0
     ? "text-red-600"
     : "text-muted-foreground";
+
+  // Compute feeding countdown
+  const now = Date.now();
+  let feedingLabel: string;
+  let feedingLabelColor: string;
+  if (!nextFeedingDueAt) {
+    feedingLabel = tc("dueNow");
+    feedingLabelColor = "text-red-500";
+  } else {
+    const diffMs = nextFeedingDueAt.getTime() - now;
+    if (diffMs > 0) {
+      feedingLabel = tc("nextIn", { time: formatDuration(diffMs) });
+      feedingLabelColor = diffMs < 30 * 60_000
+        ? "text-amber-500"
+        : "text-muted-foreground";
+    } else {
+      const overdueMs = -diffMs;
+      if (overdueMs < 2 * 60_000) {
+        feedingLabel = tc("dueNow");
+        feedingLabelColor = "text-violet-600";
+      } else {
+        feedingLabel = tc("overdueBy", { time: formatDuration(overdueMs) });
+        feedingLabelColor = overdueMs > 3_600_000 ? "text-red-500" : "text-violet-600";
+      }
+    }
+  }
 
   return (
     <Link href={`/kittens/${kitten.id}`}>
@@ -81,11 +116,8 @@ export function DashboardCard({ summary }: DashboardCardProps) {
             <div className="rounded-xl bg-muted/50 p-3 text-center">
               <div className="text-xs text-muted-foreground mb-1">{tc("feedings")}</div>
               <div className="font-bold text-base">{feedingsToday}</div>
-              <div className="text-xs text-muted-foreground">
-                {[
-                  totalConsumedMlToday > 0 ? `${totalConsumedMlToday}ml` : null,
-                  summary.totalConsumedGramsToday > 0 ? `${summary.totalConsumedGramsToday}g` : null,
-                ].filter(Boolean).join(" · ") || "0ml"} {tc("today")}
+              <div className={`text-xs font-medium ${feedingLabelColor}`}>
+                {feedingLabel}
               </div>
             </div>
 

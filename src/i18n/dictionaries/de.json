@@ -50,7 +50,10 @@
     "today": "heute",
     "elim": "Aussch.",
     "medOne": "{count} Med.",
-    "medMany": "{count} Med."
+    "medMany": "{count} Med.",
+    "nextIn": "in {time}",
+    "overdueBy": "{time} überfällig",
+    "dueNow": "jetzt fällig"
   },
   "kitten": {
     "addTitle": "Kätzchen hinzufügen",

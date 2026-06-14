@@ -12,6 +12,26 @@ import { useKittens } from "@/hooks/use-kittens";
 import { qk } from "@/lib/query-keys";
 import { useTranslations } from "@/i18n/context";
 import { useOnboardingStore } from "@/stores/onboarding.store";
+import type { KittenSummary } from "@/domain/types";
+
+function urgencyScore(s: KittenSummary): number {
+  if (s.alerts.some((a) => a.type === "feeding_overdue")) return 0;
+  if (s.alerts.some((a) => a.severity === "critical")) return 1;
+  if (s.alerts.some((a) => a.type === "feeding_due")) return 2;
+  if (s.alerts.length > 0) return 3;
+  return 4;
+}
+
+function sortByUrgency(summaries: KittenSummary[]): KittenSummary[] {
+  return [...summaries].sort((a, b) => {
+    const diff = urgencyScore(a) - urgencyScore(b);
+    if (diff !== 0) return diff;
+    // Within same urgency band, soonest feeding due first
+    const ta = a.nextFeedingDueAt?.getTime() ?? Infinity;
+    const tb = b.nextFeedingDueAt?.getTime() ?? Infinity;
+    return ta - tb;
+  });
+}
 
 const BellToggle = dynamic(
   () => import("./bell-toggle").then((m) => m.BellToggle),
@@ -92,7 +112,7 @@ export function DashboardView() {
         </div>
       ) : (
         <div className="space-y-3">
-          {summaries.map((s) => (
+          {sortByUrgency(summaries).map((s) => (
             <DashboardCard key={s.kitten.id} summary={s} />
           ))}
         </div>
