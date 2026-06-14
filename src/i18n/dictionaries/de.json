@@ -322,5 +322,32 @@
     "it": "Italiano",
     "pt": "Português",
     "de": "Deutsch"
+  },
+  "onboarding": {
+    "helpButton": "Hilfe",
+    "back": "Zurück",
+    "next": "Weiter",
+    "slide1Title": "Easy Kitty Care",
+    "slide1Body": "Verfolge jede Mahlzeit, jede Wiegung und jeden medizinischen Vorfall deiner Pflegekätzchen. Erhalte Benachrichtigungen, wenn etwas Aufmerksamkeit braucht.",
+    "slide2Title": "Tägliche Erfassung",
+    "slide2Feedings": "Fütterungen",
+    "slide2FeedingsDetail": "Futterart, Methode und verbrauchte Menge erfassen",
+    "slide2Weight": "Gewicht",
+    "slide2WeightDetail": "Wachstum verfolgen und mit Referenzkurven vergleichen",
+    "slide2Health": "Gesundheit",
+    "slide2HealthDetail": "Energie, Hydration, Appetit und Temperatur notieren",
+    "slide2Meds": "Medikamente",
+    "slide2MedsDetail": "Medikamente planen und jede Gabe erfassen",
+    "slide3Title": "Gemeinsam pflegen",
+    "slide3Household": "Mitpfleger einladen",
+    "slide3HouseholdDetail": "Haushaltsmitglieder hinzufügen, damit alle in Echtzeit synchronisiert sind",
+    "slide3Share": "Mit dem Tierarzt teilen",
+    "slide3ShareDetail": "Schreibgeschützten Pflegebericht mit Ablaufdatum erstellen",
+    "slide3Alerts": "Push-Benachrichtigungen",
+    "slide3AlertsDetail": "Benachrichtigungen bei vergessener Fütterung, Gewichtsverlust oder fälligen Medikamenten",
+    "slide4Title": "Alles bereit!",
+    "slide4Body": "Füge dein erstes Kätzchen hinzu, um zu beginnen. Lade weitere Pflegepersonen im Haushalt-Tab ein.",
+    "slide4Cta": "Erstes Kätzchen hinzufügen",
+    "slide4Done": "Verstanden"
   }
 }

@@ -322,5 +322,32 @@
     "it": "Italiano",
     "pt": "Português",
     "de": "Deutsch"
+  },
+  "onboarding": {
+    "helpButton": "Aiuto",
+    "back": "Indietro",
+    "next": "Avanti",
+    "slide1Title": "Easy Kitty Care",
+    "slide1Body": "Registra ogni pasto, pesata ed evento medico per i tuoi gattini in affido. Ricevi notifiche quando serve la tua attenzione.",
+    "slide2Title": "Monitoraggio quotidiano",
+    "slide2Feedings": "Pasti",
+    "slide2FeedingsDetail": "Registra tipo di cibo, metodo e quantità consumata",
+    "slide2Weight": "Peso",
+    "slide2WeightDetail": "Visualizza la crescita e confronta con le curve di riferimento",
+    "slide2Health": "Salute",
+    "slide2HealthDetail": "Nota energia, idratazione, appetito e temperatura",
+    "slide2Meds": "Farmaci",
+    "slide2MedsDetail": "Pianifica i farmaci e registra ogni somministrazione",
+    "slide3Title": "Prendersi cura insieme",
+    "slide3Household": "Invita co-caregivers",
+    "slide3HouseholdDetail": "Aggiungi membri della famiglia per restare sincronizzati in tempo reale",
+    "slide3Share": "Condividi con il veterinario",
+    "slide3ShareDetail": "Genera un link di sola lettura con data di scadenza",
+    "slide3Alerts": "Notifiche push",
+    "slide3AlertsDetail": "Ricevi notifiche per pasti mancati, perdita di peso o farmaci in scadenza",
+    "slide4Title": "Sei pronto!",
+    "slide4Body": "Aggiungi il tuo primo gattino per iniziare. Invita altri caregiver dalla scheda Famiglia.",
+    "slide4Cta": "Aggiungi primo gattino",
+    "slide4Done": "Capito"
   }
 }

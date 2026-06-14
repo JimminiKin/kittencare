@@ -322,5 +322,32 @@
     "it": "Italiano",
     "pt": "Português",
     "de": "Deutsch"
+  },
+  "onboarding": {
+    "helpButton": "Ajuda",
+    "back": "Voltar",
+    "next": "Próximo",
+    "slide1Title": "Easy Kitty Care",
+    "slide1Body": "Acompanhe cada refeição, pesagem e evento médico dos seus gatinhos em acolhimento. Receba alertas quando algo precisar de atenção.",
+    "slide2Title": "Acompanhamento diário",
+    "slide2Feedings": "Refeições",
+    "slide2FeedingsDetail": "Registe o tipo de alimento, método e quantidade consumida",
+    "slide2Weight": "Peso",
+    "slide2WeightDetail": "Acompanhe o crescimento e compare com curvas de referência",
+    "slide2Health": "Saúde",
+    "slide2HealthDetail": "Anote energia, hidratação, apetite e temperatura",
+    "slide2Meds": "Medicamentos",
+    "slide2MedsDetail": "Programe medicamentos e registe cada administração",
+    "slide3Title": "Cuidar em conjunto",
+    "slide3Household": "Convide co-cuidadores",
+    "slide3HouseholdDetail": "Adicione membros do agregado para ficarem todos sincronizados",
+    "slide3Share": "Partilhe com o seu veterinário",
+    "slide3ShareDetail": "Gere um link de só leitura com data de expiração",
+    "slide3Alerts": "Notificações push",
+    "slide3AlertsDetail": "Receba alertas por refeições em falta, perda de peso ou medicamentos pendentes",
+    "slide4Title": "Está tudo pronto!",
+    "slide4Body": "Adicione o seu primeiro gatinho para começar. Convide outros cuidadores no separador Agregado.",
+    "slide4Cta": "Adicionar primeiro gatinho",
+    "slide4Done": "Entendi"
   }
 }

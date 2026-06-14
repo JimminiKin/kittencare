@@ -322,5 +322,32 @@
     "it": "Italiano",
     "pt": "Português",
     "de": "Deutsch"
+  },
+  "onboarding": {
+    "helpButton": "Help",
+    "back": "Back",
+    "next": "Next",
+    "slide1Title": "Easy Kitty Care",
+    "slide1Body": "Track every feeding, weight, and medical event for each foster kitten in your care. Get alerted when something needs your attention.",
+    "slide2Title": "Daily tracking",
+    "slide2Feedings": "Feedings",
+    "slide2FeedingsDetail": "Log meals with food type, method, and amount consumed",
+    "slide2Weight": "Weight",
+    "slide2WeightDetail": "Chart growth and compare against reference curves",
+    "slide2Health": "Health",
+    "slide2HealthDetail": "Record energy, hydration, appetite, and temperature",
+    "slide2Meds": "Medications",
+    "slide2MedsDetail": "Schedule medications and track each administration",
+    "slide3Title": "Care together",
+    "slide3Household": "Invite co-caregivers",
+    "slide3HouseholdDetail": "Add household members so everyone stays in sync in real time",
+    "slide3Share": "Share with your vet",
+    "slide3ShareDetail": "Generate a read-only care record link — set an expiry and send it",
+    "slide3Alerts": "Push notifications",
+    "slide3AlertsDetail": "Get notified when a feeding is overdue, weight drops, or a medication is due",
+    "slide4Title": "You're all set!",
+    "slide4Body": "Add your first kitten to start tracking. You can invite other caregivers from the Household tab.",
+    "slide4Cta": "Add First Kitten",
+    "slide4Done": "Got it"
   }
 }

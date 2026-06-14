@@ -322,5 +322,32 @@
     "it": "Italiano",
     "pt": "Português",
     "de": "Deutsch"
+  },
+  "onboarding": {
+    "helpButton": "Ayuda",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "slide1Title": "Easy Kitty Care",
+    "slide1Body": "Registra cada comida, pesaje y evento médico de tus gatitos en acogida. Recibe alertas cuando algo necesita atención.",
+    "slide2Title": "Seguimiento diario",
+    "slide2Feedings": "Comidas",
+    "slide2FeedingsDetail": "Registra el tipo de alimento, el método y la cantidad consumida",
+    "slide2Weight": "Peso",
+    "slide2WeightDetail": "Visualiza el crecimiento y compara con curvas de referencia",
+    "slide2Health": "Salud",
+    "slide2HealthDetail": "Anota energía, hidratación, apetito y temperatura",
+    "slide2Meds": "Medicamentos",
+    "slide2MedsDetail": "Programa medicamentos y registra cada administración",
+    "slide3Title": "Cuidar juntos",
+    "slide3Household": "Invita a co-cuidadores",
+    "slide3HouseholdDetail": "Añade miembros para que todos estén sincronizados en tiempo real",
+    "slide3Share": "Comparte con tu veterinario",
+    "slide3ShareDetail": "Genera un enlace de solo lectura con fecha de vencimiento",
+    "slide3Alerts": "Notificaciones push",
+    "slide3AlertsDetail": "Recibe alertas por comidas perdidas, pérdida de peso o medicamentos pendientes",
+    "slide4Title": "¡Todo listo!",
+    "slide4Body": "Añade tu primer gatito para empezar. Invita a otros cuidadores desde la pestaña Hogar.",
+    "slide4Cta": "Añadir primer gatito",
+    "slide4Done": "Entendido"
   }
 }

@@ -322,5 +322,32 @@
     "it": "Italiano",
     "pt": "Português",
     "de": "Deutsch"
+  },
+  "onboarding": {
+    "helpButton": "Aide",
+    "back": "Retour",
+    "next": "Suivant",
+    "slide1Title": "Easy Kitty Care",
+    "slide1Body": "Suivez chaque repas, chaque pesée et chaque soin médical pour vos chatons en famille d'accueil. Recevez une alerte dès qu'une action est nécessaire.",
+    "slide2Title": "Suivi quotidien",
+    "slide2Feedings": "Repas",
+    "slide2FeedingsDetail": "Enregistrez le type d'aliment, la méthode et la quantité consommée",
+    "slide2Weight": "Poids",
+    "slide2WeightDetail": "Visualisez la croissance et comparez aux courbes de référence",
+    "slide2Health": "Santé",
+    "slide2HealthDetail": "Notez l'énergie, l'hydratation, l'appétit et la température",
+    "slide2Meds": "Médicaments",
+    "slide2MedsDetail": "Planifiez les médicaments et suivez chaque administration",
+    "slide3Title": "Prendre soin ensemble",
+    "slide3Household": "Invitez des co-soignants",
+    "slide3HouseholdDetail": "Ajoutez des membres pour que tout le monde reste synchronisé",
+    "slide3Share": "Partagez avec votre vétérinaire",
+    "slide3ShareDetail": "Générez un lien en lecture seule avec une date d'expiration",
+    "slide3Alerts": "Notifications push",
+    "slide3AlertsDetail": "Soyez alerté en cas de repas manqué, de perte de poids ou de médicament dû",
+    "slide4Title": "Tout est prêt !",
+    "slide4Body": "Ajoutez votre premier chaton pour commencer. Invitez d'autres soignants depuis l'onglet Foyer.",
+    "slide4Cta": "Ajouter mon premier chaton",
+    "slide4Done": "Compris"
   }
 }

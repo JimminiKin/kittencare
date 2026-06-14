@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Plus, RefreshCw } from "lucide-react";
+import { Plus, RefreshCw, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AlertBanner } from "@/components/shared/alert-banner";
 import { DashboardCard } from "./dashboard-card";
@@ -11,6 +11,7 @@ import { useSummaries } from "@/hooks/use-summaries";
 import { useKittens } from "@/hooks/use-kittens";
 import { qk } from "@/lib/query-keys";
 import { useTranslations } from "@/i18n/context";
+import { useOnboardingStore } from "@/stores/onboarding.store";
 
 const BellToggle = dynamic(
   () => import("./bell-toggle").then((m) => m.BellToggle),
@@ -22,6 +23,8 @@ export function DashboardView() {
   const { data: kittens = [], isLoading: kittensLoading } = useKittens();
   const { data: summaries = [], isLoading: summariesLoading } = useSummaries();
   const t = useTranslations("dashboard");
+  const tO = useTranslations("onboarding");
+  const { setOpen: openOnboarding } = useOnboardingStore();
 
   const activeCount = kittens.filter((k) => k.status === "active").length;
   const summariesPending = !kittensLoading && activeCount > 0 && summariesLoading;
@@ -42,6 +45,14 @@ export function DashboardView() {
         </div>
         <div className="flex gap-2 items-center">
           <BellToggle />
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => openOnboarding(true)}
+            aria-label={tO("helpButton")}
+          >
+            <HelpCircle className="h-4 w-4" />
+          </Button>
           <Button
             variant="ghost"
             size="icon-sm"
