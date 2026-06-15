@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { format, addHours, formatDistanceToNow } from "date-fns";
-import { Plus, Check, Clock, AlertCircle, Trash2 } from "lucide-react";
+import { Plus, Check, Clock, AlertCircle, Trash2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -31,7 +31,7 @@ interface MedicationViewProps {
 
 export function MedicationView({ defaultKittenId }: MedicationViewProps) {
   const { data: kittens = [] } = useKittens();
-  const { addMedication, deleteMedication, administerMedication } = useCareStore();
+  const { addMedication, updateMedication, deleteMedication, administerMedication } = useCareStore();
   const t = useTranslations("medication");
   const tc = useTranslations("common");
 
@@ -119,14 +119,20 @@ export function MedicationView({ defaultKittenId }: MedicationViewProps) {
                         {med.dosage} · {t("every", { hours: med.frequencyHours })}
                       </p>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      className="text-muted-foreground shrink-0"
-                      onClick={() => deleteMedication(med.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <EditMedicationDialog
+                        medication={med}
+                        onSave={(partial) => updateMedication(med.id, partial)}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className="text-muted-foreground"
+                        onClick={() => deleteMedication(med.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
 
                   {isActive && (
@@ -196,6 +202,92 @@ function MedIcon({ className }: { className?: string }) {
       <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z" />
       <path d="m8.5 8.5 7 7" />
     </svg>
+  );
+}
+
+interface EditMedicationDialogProps {
+  medication: Medication;
+  onSave: (partial: Partial<Omit<Medication, "id">>) => Promise<void>;
+}
+
+function EditMedicationDialog({ medication, onSave }: EditMedicationDialogProps) {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState(medication.name);
+  const [dosage, setDosage] = useState(medication.dosage);
+  const [frequencyHours, setFrequencyHours] = useState(medication.frequencyHours);
+  const [notes, setNotes] = useState(medication.notes ?? "");
+  const [saving, setSaving] = useState(false);
+  const tc = useTranslations("common");
+
+  const handleOpen = (val: boolean) => {
+    if (val) {
+      setName(medication.name);
+      setDosage(medication.dosage);
+      setFrequencyHours(medication.frequencyHours);
+      setNotes(medication.notes ?? "");
+    }
+    setOpen(val);
+  };
+
+  const handleSave = async () => {
+    if (!name.trim() || !dosage.trim()) return;
+    setSaving(true);
+    try {
+      await onSave({
+        name: name.trim(),
+        dosage: dosage.trim(),
+        frequencyHours,
+        notes: notes.trim() || undefined,
+      });
+      setOpen(false);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const t = useTranslations("medication");
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpen}>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="icon-sm" className="text-muted-foreground">
+          <Pencil className="h-4 w-4" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-sm mx-4">
+        <DialogHeader>
+          <DialogTitle>{tc("edit")}</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>{t("nameLabel")}</Label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} autoFocus />
+          </div>
+          <div className="space-y-2">
+            <Label>{t("dosageLabel")}</Label>
+            <Input value={dosage} onChange={(e) => setDosage(e.target.value)} />
+          </div>
+          <div className="space-y-3">
+            <Label>{t("frequencyLabel")}</Label>
+            <NumericStepper
+              value={frequencyHours}
+              onChange={setFrequencyHours}
+              min={1}
+              max={72}
+              step={1}
+              unit="h"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>{t("notesLabel")}</Label>
+            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} placeholder={t("notesPlaceholder")} />
+          </div>
+          <Button className="w-full" onClick={handleSave} disabled={saving || !name || !dosage}>
+            {saving ? tc("saving") : tc("save")}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
