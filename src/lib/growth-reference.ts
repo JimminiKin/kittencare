@@ -43,16 +43,17 @@ export function interpolateReference(ageDays: number): { mean: number; sd: numbe
 }
 
 // Returns the kitten's age in whole days at a given timestamp.
-// Uses birthDate if available, otherwise falls back to estimatedAgeDays + intakeDate.
+// Uses birthDate if available, otherwise falls back to estimatedAgeDays anchored at updatedAt
+// (the moment the age was last set in the edit form).
 export function getAgeDaysAt(
-  kitten: { birthDate?: Date; estimatedAgeDays?: number; intakeDate?: Date },
+  kitten: { birthDate?: Date; estimatedAgeDays?: number; updatedAt?: Date },
   at: Date
 ): number | null {
   if (kitten.birthDate) {
     return Math.round((at.getTime() - kitten.birthDate.getTime()) / 86_400_000);
   }
   if (kitten.estimatedAgeDays !== undefined) {
-    const ref = kitten.intakeDate ?? new Date();
+    const ref = kitten.updatedAt ?? new Date();
     return Math.round(kitten.estimatedAgeDays + (at.getTime() - ref.getTime()) / 86_400_000);
   }
   return null;

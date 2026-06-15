@@ -21,7 +21,7 @@ type SDBand = "none" | "1sd" | "2sd" | "both";
 
 interface WeightChartProps {
   entries: WeightEntry[];
-  kitten?: { birthDate?: Date; estimatedAgeDays?: number; intakeDate?: Date };
+  kitten?: { birthDate?: Date; estimatedAgeDays?: number; updatedAt?: Date };
   height?: number;
 }
 
