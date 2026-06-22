@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Cat, Utensils, Scale, Users } from "lucide-react";
+import { Home, Utensils, Scale, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "@/i18n/context";
 
 const NAV_ITEMS = [
   { href: "/", key: "home", icon: Home },
-  { href: "/kittens", key: "kittens", icon: Cat },
   { href: "/feed", key: "feed", icon: Utensils },
   { href: "/weight", key: "weight", icon: Scale },
   { href: "/account", key: "household", icon: Users },
@@ -19,7 +18,7 @@ export function BottomNav() {
   const t = useTranslations("nav");
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
       <div className="mx-auto max-w-lg">
         <div className="flex items-stretch h-16">
           {NAV_ITEMS.map(({ href, key, icon: Icon }) => {

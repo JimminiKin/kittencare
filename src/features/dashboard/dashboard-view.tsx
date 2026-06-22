@@ -2,9 +2,10 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Plus, RefreshCw, HelpCircle } from "lucide-react";
+import { Plus, RefreshCw, HelpCircle, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AlertBanner } from "@/components/shared/alert-banner";
+import { KittenAvatar } from "@/components/shared/kitten-avatar";
 import { DashboardCard } from "./dashboard-card";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSummaries } from "@/hooks/use-summaries";
@@ -43,10 +44,12 @@ export function DashboardView() {
   const { data: kittens = [], isLoading: kittensLoading } = useKittens();
   const { data: summaries = [], isLoading: summariesLoading } = useSummaries();
   const t = useTranslations("dashboard");
+  const tK = useTranslations("kitten");
   const tO = useTranslations("onboarding");
   const { setOpen: openOnboarding } = useOnboardingStore();
 
   const activeCount = kittens.filter((k) => k.status === "active").length;
+  const archived = kittens.filter((k) => k.status !== "active");
   const summariesPending = !kittensLoading && activeCount > 0 && summariesLoading;
 
   const allAlerts = summaries.flatMap((s) => s.alerts);
@@ -96,7 +99,7 @@ export function DashboardView() {
             <div key={i} className="h-36 rounded-2xl bg-muted animate-pulse" />
           ))}
         </div>
-      ) : summaries.length === 0 ? (
+      ) : summaries.length === 0 && archived.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center gap-4">
           <div className="text-6xl">🐱</div>
           <div>
@@ -111,11 +114,38 @@ export function DashboardView() {
           </Button>
         </div>
       ) : (
-        <div className="space-y-3">
-          {sortByUrgency(summaries).map((s) => (
-            <DashboardCard key={s.kitten.id} summary={s} />
-          ))}
-        </div>
+        <>
+          {summaries.length > 0 && (
+            <div className="space-y-3">
+              {sortByUrgency(summaries).map((s) => (
+                <DashboardCard key={s.kitten.id} summary={s} />
+              ))}
+            </div>
+          )}
+          {archived.length > 0 && (
+            <div className="space-y-2">
+              <h2 className="text-base font-semibold text-muted-foreground">
+                {tK("archivedCount", { count: archived.length })}
+              </h2>
+              <div className="space-y-2 opacity-60">
+                {archived.map((k) => (
+                  <Link key={k.id} href={`/kittens/${k.id}`}>
+                    <div className="flex items-center gap-3 p-4 rounded-2xl border bg-card">
+                      <KittenAvatar name={k.name} photo={k.photo} size="md" />
+                      <div className="flex-1 min-w-0">
+                        <span className="font-semibold">{k.name}</span>
+                        <p className="text-sm text-muted-foreground capitalize">
+                          {tK(`status${k.status.charAt(0).toUpperCase()}${k.status.slice(1)}` as Parameters<typeof tK>[0])}
+                        </p>
+                      </div>
+                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {(summaries.length > 0 || summariesPending) && (

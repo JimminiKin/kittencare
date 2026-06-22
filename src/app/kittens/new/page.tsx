@@ -8,7 +8,7 @@ export default function NewKittenPage() {
   const t = useTranslations("kitten");
   return (
     <>
-      <PageHeader title={t("addTitle")} backHref="/kittens" />
+      <PageHeader title={t("addTitle")} backHref="/" />
       <KittenForm />
     </>
   );

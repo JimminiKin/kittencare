@@ -14,7 +14,7 @@ export default function KittenDetailPage({
   const t = useTranslations("kitten");
   return (
     <>
-      <PageHeader title={t("detailTitle")} backHref="/kittens" />
+      <PageHeader title={t("detailTitle")} backHref="/" />
       <KittenDetailView kittenId={id} />
     </>
   );

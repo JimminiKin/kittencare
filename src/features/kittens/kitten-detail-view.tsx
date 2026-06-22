@@ -144,7 +144,7 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
 
   const handleDeleteKitten = async () => {
     await deleteKitten(kitten.id);
-    router.push("/kittens");
+    router.push("/");
   };
 
   return (
