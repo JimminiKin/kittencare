@@ -22,7 +22,7 @@ export function useSummaries() {
   const repos = getRepositories();
 
   return useQuery<KittenSummary[]>({
-    queryKey: qk.summaries(),
+    queryKey: [...qk.summaries(), kittens?.map((k) => k.id)],
     queryFn: async () => {
       const active = kittens?.filter((k) => k.status === "active") ?? [];
       const results = await Promise.allSettled(

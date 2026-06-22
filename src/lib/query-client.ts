@@ -7,7 +7,9 @@ export function getQueryClient(): QueryClient {
     _client = new QueryClient({
       defaultOptions: {
         queries: {
+          staleTime: 0,
           gcTime: 5 * 60_000,
+          networkMode: "offlineFirst",
           refetchOnWindowFocus: true,
           retry: 2,
         },

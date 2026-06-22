@@ -57,6 +57,7 @@ async function activateCloud(userId: string): Promise<void> {
 
     setSessionContext({ userId, householdId });
     setUseCloudRepositories(true);
+    getQueryClient().invalidateQueries();
     useAuthStore.setState({ role: role as "owner" | "member", ready: true });
 
     startRealtime(householdId, userId);
