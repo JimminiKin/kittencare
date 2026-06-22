@@ -27,6 +27,7 @@ import { useKitten } from "@/hooks/use-kittens";
 import { useKittenCare } from "@/hooks/use-kitten-care";
 import { useProfiles } from "@/hooks/use-profiles";
 import { ShareSection } from "./share-section";
+import { TransferSection } from "./transfer-section";
 import { buildKittenSummaryFromData } from "@/services/alert.service";
 import { formatWeight, formatWeightChange } from "@/lib/utils";
 import { useFormatAge } from "@/lib/use-format-age";
@@ -316,6 +317,8 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
       </div>
 
       <ShareSection kittenId={kitten.id} kittenName={kitten.name} />
+
+      <TransferSection kittenId={kitten.id} kittenName={kitten.name} />
 
       {kitten.status === "active" ? (
         <div className="pt-4 border-t">

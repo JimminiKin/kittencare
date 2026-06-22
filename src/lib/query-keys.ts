@@ -8,5 +8,6 @@ export const qk = {
   health:       (id: string) => ["health",       id]     as const,
   summaries:    ()           => ["summaries"]            as const,
   profiles:     ()           => ["profiles"]             as const,
-  shareTokens:  (id: string) => ["shareTokens",  id]     as const,
+  shareTokens:     (id: string) => ["shareTokens",     id] as const,
+  kittenTransfers: (id: string) => ["kittenTransfers", id] as const,
 };

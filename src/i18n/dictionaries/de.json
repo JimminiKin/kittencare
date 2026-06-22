@@ -371,5 +371,29 @@
     "slide4Body": "Füge dein erstes Kätzchen hinzu, um zu beginnen. Lade weitere Pflegepersonen im Haushalt-Tab ein.",
     "slide4Cta": "Erstes Kätzchen hinzufügen",
     "slide4Done": "Verstanden"
+  },
+  "transfer": {
+    "sectionTitle": "Katze übertragen",
+    "sectionDescription": "Erstelle einen einmaligen Link, damit ein anderer KittenTrack-Benutzer diese Katze erhält. Das ursprüngliche Profil bleibt hier als schreibgeschütztes Archiv.",
+    "generateLink": "Übertragungslink kopieren",
+    "pendingLinks": "Ausstehende Übertragungen",
+    "pendingLabel": "Übertragung ausstehend",
+    "expires": "Läuft ab am {date}",
+    "revoke": "Widerrufen",
+    "revokeTitle": "Diesen Übertragungslink widerrufen?",
+    "revokeBody": "Der Link für {name} wird nicht mehr funktionieren.",
+    "ownerOnly": "Nur Haushaltseigentümer können Übertragungen erstellen.",
+    "transferredBy": "Übertragung von {name}",
+    "fromHousehold": "Von {household}",
+    "description": "Durch das Annehmen dieser Übertragung wird diese Katze als neuer Datensatz zu deinem Haushalt hinzugefügt. Der vorherige Betreuer behält eine schreibgeschützte Kopie der Historie.",
+    "signInFirst": "Du musst dich anmelden, um diese Übertragung anzunehmen.",
+    "signInButton": "Anmelden",
+    "accept": "{name} annehmen",
+    "accepting": "Annehmen…",
+    "accepted": "{name} wurde deinem Haushalt hinzugefügt!",
+    "errorNotFound": "Dieser Übertragungslink ist ungültig oder abgelaufen.",
+    "errorAlreadyAccepted": "Diese Übertragung wurde bereits angenommen.",
+    "errorNoHousehold": "Du musst einem Haushalt beitreten oder einen erstellen, bevor du eine Übertragung annehmen kannst.",
+    "errorSameHousehold": "Du kannst eine Katze nicht in denselben Haushalt übertragen."
   }
 }

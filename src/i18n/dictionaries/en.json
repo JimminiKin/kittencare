@@ -371,5 +371,29 @@
     "slide4Body": "Add your first kitten to start tracking. You can invite other caregivers from the Household tab.",
     "slide4Cta": "Add First Kitten",
     "slide4Done": "Got it"
+  },
+  "transfer": {
+    "sectionTitle": "Transfer cat",
+    "sectionDescription": "Generate a one-time link so another KittenTrack user can receive this cat. The original record stays here as a read-only archive.",
+    "generateLink": "Copy transfer link",
+    "pendingLinks": "Pending transfers",
+    "pendingLabel": "Transfer pending",
+    "expires": "Expires {date}",
+    "revoke": "Revoke",
+    "revokeTitle": "Revoke this transfer link?",
+    "revokeBody": "The link for {name} will no longer work.",
+    "ownerOnly": "Only household owners can create transfers.",
+    "transferredBy": "Transfer from {name}",
+    "fromHousehold": "From {household}",
+    "description": "Accepting this transfer will add this cat to your household as a fresh record. The previous caregiver keeps a read-only copy of the history.",
+    "signInFirst": "You need to sign in to accept this transfer.",
+    "signInButton": "Sign in",
+    "accept": "Accept {name}",
+    "accepting": "Accepting…",
+    "accepted": "{name} has been added to your household!",
+    "errorNotFound": "This transfer link is invalid or has expired.",
+    "errorAlreadyAccepted": "This transfer has already been accepted.",
+    "errorNoHousehold": "You need to join or create a household before accepting a transfer.",
+    "errorSameHousehold": "You can't transfer a cat to the same household."
   }
 }

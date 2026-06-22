@@ -371,5 +371,29 @@
     "slide4Body": "Aggiungi il tuo primo gattino per iniziare. Invita altri caregiver dalla scheda Famiglia.",
     "slide4Cta": "Aggiungi primo gattino",
     "slide4Done": "Capito"
+  },
+  "transfer": {
+    "sectionTitle": "Trasferisci gatto",
+    "sectionDescription": "Genera un link monouso affinché un altro utente KittenTrack riceva questo gatto. Il profilo originale rimane qui come archivio di sola lettura.",
+    "generateLink": "Copia link di trasferimento",
+    "pendingLinks": "Trasferimenti in sospeso",
+    "pendingLabel": "Trasferimento in sospeso",
+    "expires": "Scade il {date}",
+    "revoke": "Revoca",
+    "revokeTitle": "Revocare questo link di trasferimento?",
+    "revokeBody": "Il link per {name} non funzionerà più.",
+    "ownerOnly": "Solo i proprietari della famiglia possono creare trasferimenti.",
+    "transferredBy": "Trasferimento da {name}",
+    "fromHousehold": "Da {household}",
+    "description": "Accettando questo trasferimento, il gatto verrà aggiunto alla tua famiglia come nuovo profilo. Il precedente curatore conserva una copia di sola lettura della cronologia.",
+    "signInFirst": "Devi accedere per accettare questo trasferimento.",
+    "signInButton": "Accedi",
+    "accept": "Accetta {name}",
+    "accepting": "Accettazione…",
+    "accepted": "{name} è stato aggiunto alla tua famiglia!",
+    "errorNotFound": "Questo link di trasferimento non è valido o è scaduto.",
+    "errorAlreadyAccepted": "Questo trasferimento è già stato accettato.",
+    "errorNoHousehold": "Devi unirti o creare una famiglia prima di accettare un trasferimento.",
+    "errorSameHousehold": "Non puoi trasferire un gatto nella stessa famiglia."
   }
 }

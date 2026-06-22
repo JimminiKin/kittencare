@@ -371,5 +371,29 @@
     "slide4Body": "Ajoutez votre premier chaton pour commencer. Invitez d'autres soignants depuis l'onglet Foyer.",
     "slide4Cta": "Ajouter mon premier chaton",
     "slide4Done": "Compris"
+  },
+  "transfer": {
+    "sectionTitle": "Transférer le chat",
+    "sectionDescription": "Générez un lien unique pour qu'un autre utilisateur KittenTrack reçoive ce chat. L'enregistrement original reste ici en lecture seule.",
+    "generateLink": "Copier le lien de transfert",
+    "pendingLinks": "Transferts en attente",
+    "pendingLabel": "Transfert en attente",
+    "expires": "Expire le {date}",
+    "revoke": "Révoquer",
+    "revokeTitle": "Révoquer ce lien de transfert ?",
+    "revokeBody": "Le lien pour {name} ne fonctionnera plus.",
+    "ownerOnly": "Seuls les propriétaires du foyer peuvent créer des transferts.",
+    "transferredBy": "Transfert de {name}",
+    "fromHousehold": "De {household}",
+    "description": "En acceptant ce transfert, ce chat sera ajouté à votre foyer comme nouveau dossier. L'ancien soignant conserve une copie en lecture seule de l'historique.",
+    "signInFirst": "Vous devez vous connecter pour accepter ce transfert.",
+    "signInButton": "Se connecter",
+    "accept": "Accepter {name}",
+    "accepting": "Acceptation…",
+    "accepted": "{name} a été ajouté à votre foyer !",
+    "errorNotFound": "Ce lien de transfert est invalide ou a expiré.",
+    "errorAlreadyAccepted": "Ce transfert a déjà été accepté.",
+    "errorNoHousehold": "Vous devez rejoindre ou créer un foyer avant d'accepter un transfert.",
+    "errorSameHousehold": "Vous ne pouvez pas transférer un chat vers le même foyer."
   }
 }

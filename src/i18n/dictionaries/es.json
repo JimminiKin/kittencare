@@ -371,5 +371,29 @@
     "slide4Body": "Añade tu primer gatito para empezar. Invita a otros cuidadores desde la pestaña Hogar.",
     "slide4Cta": "Añadir primer gatito",
     "slide4Done": "Entendido"
+  },
+  "transfer": {
+    "sectionTitle": "Transferir gato",
+    "sectionDescription": "Genera un enlace de un solo uso para que otro usuario de KittenTrack reciba este gato. El registro original permanece aquí como archivo de solo lectura.",
+    "generateLink": "Copiar enlace de transferencia",
+    "pendingLinks": "Transferencias pendientes",
+    "pendingLabel": "Transferencia pendiente",
+    "expires": "Expira el {date}",
+    "revoke": "Revocar",
+    "revokeTitle": "¿Revocar este enlace de transferencia?",
+    "revokeBody": "El enlace para {name} dejará de funcionar.",
+    "ownerOnly": "Solo los propietarios del hogar pueden crear transferencias.",
+    "transferredBy": "Transferencia de {name}",
+    "fromHousehold": "De {household}",
+    "description": "Al aceptar esta transferencia, este gato se añadirá a tu hogar como registro nuevo. El cuidador anterior conserva una copia de solo lectura del historial.",
+    "signInFirst": "Debes iniciar sesión para aceptar esta transferencia.",
+    "signInButton": "Iniciar sesión",
+    "accept": "Aceptar a {name}",
+    "accepting": "Aceptando…",
+    "accepted": "¡{name} ha sido añadido a tu hogar!",
+    "errorNotFound": "Este enlace de transferencia no es válido o ha expirado.",
+    "errorAlreadyAccepted": "Esta transferencia ya ha sido aceptada.",
+    "errorNoHousehold": "Debes unirte o crear un hogar antes de aceptar una transferencia.",
+    "errorSameHousehold": "No puedes transferir un gato al mismo hogar."
   }
 }

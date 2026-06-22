@@ -371,5 +371,29 @@
     "slide4Body": "Adicione o seu primeiro gatinho para começar. Convide outros cuidadores no separador Agregado.",
     "slide4Cta": "Adicionar primeiro gatinho",
     "slide4Done": "Entendi"
+  },
+  "transfer": {
+    "sectionTitle": "Transferir gato",
+    "sectionDescription": "Gere um link de uso único para que outro utilizador do KittenTrack receba este gato. O registo original fica aqui como arquivo de leitura.",
+    "generateLink": "Copiar link de transferência",
+    "pendingLinks": "Transferências pendentes",
+    "pendingLabel": "Transferência pendente",
+    "expires": "Expira em {date}",
+    "revoke": "Revogar",
+    "revokeTitle": "Revogar este link de transferência?",
+    "revokeBody": "O link para {name} deixará de funcionar.",
+    "ownerOnly": "Apenas os proprietários do agregado podem criar transferências.",
+    "transferredBy": "Transferência de {name}",
+    "fromHousehold": "De {household}",
+    "description": "Ao aceitar esta transferência, este gato será adicionado ao seu agregado como novo registo. O cuidador anterior conserva uma cópia de leitura do histórico.",
+    "signInFirst": "Tem de iniciar sessão para aceitar esta transferência.",
+    "signInButton": "Iniciar sessão",
+    "accept": "Aceitar {name}",
+    "accepting": "A aceitar…",
+    "accepted": "{name} foi adicionado ao seu agregado!",
+    "errorNotFound": "Este link de transferência é inválido ou expirou.",
+    "errorAlreadyAccepted": "Esta transferência já foi aceite.",
+    "errorNoHousehold": "Tem de aderir ou criar um agregado antes de aceitar uma transferência.",
+    "errorSameHousehold": "Não pode transferir um gato para o mesmo agregado."
   }
 }
