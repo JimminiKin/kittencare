@@ -81,7 +81,7 @@ export function TransferAcceptView({ token }: { token: string }) {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] gap-6 text-center px-4">
-      <KittenAvatar name={details!.kittenName} photo={details!.kittenPhoto} size="lg" />
+      <KittenAvatar name={details!.kittenName} photo={details!.kittenPhoto ?? undefined} size="lg" />
       <div>
         {details!.transferredBy && (
           <p className="text-sm text-muted-foreground">
