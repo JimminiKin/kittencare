@@ -4,7 +4,8 @@
     "kittens": "Gattini",
     "feed": "Pasto",
     "weight": "Peso",
-    "household": "Casa"
+    "household": "Casa",
+    "admin": "Admin"
   },
   "common": {
     "saving": "Salvataggio…",
@@ -324,7 +325,8 @@
     "removeTitle": "Rimuovere {name}?",
     "removeBody": "{name} perderà l'accesso a questo nucleo.",
     "revokeTitle": "Revocare questo invito?",
-    "revokeBody": "Il link di invito non funzionerà più."
+    "revokeBody": "Il link di invito non funzionerà più.",
+    "rename": "Rename household"
   },
   "invite": {
     "invitedBy": "{name} ti ha invitato in",

@@ -4,7 +4,8 @@
     "kittens": "Chatons",
     "feed": "Repas",
     "weight": "Poids",
-    "household": "Foyer"
+    "household": "Foyer",
+    "admin": "Admin"
   },
   "common": {
     "saving": "Enregistrement…",
@@ -324,7 +325,8 @@
     "removeTitle": "Retirer {name} ?",
     "removeBody": "{name} perdra l'accès à ce foyer.",
     "revokeTitle": "Révoquer cette invitation ?",
-    "revokeBody": "Le lien d'invitation ne fonctionnera plus."
+    "revokeBody": "Le lien d'invitation ne fonctionnera plus.",
+    "rename": "Rename household"
   },
   "invite": {
     "invitedBy": "{name} vous invite dans",

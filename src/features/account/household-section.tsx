@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Copy, Check, Crown, UserMinus, LogOut } from "lucide-react";
+import { Copy, Check, Crown, UserMinus, LogOut, Pencil, X } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ import {
   removeMember,
   transferOwnership,
   leaveHousehold,
+  renameHousehold,
   type HouseholdInfo,
   type PendingInvite,
 } from "@/services/household.service";
@@ -55,6 +56,9 @@ export function HouseholdSection({ user }: { user: User }) {
   const [inviteEmail, setInviteEmail] = useState("");
   const [generatingLink, setGeneratingLink] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [nameValue, setNameValue] = useState("");
+  const [savingName, setSavingName] = useState(false);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -68,6 +72,15 @@ export function HouseholdSection({ user }: { user: User }) {
   }, [user.id]);
 
   useEffect(() => { refresh(); }, [refresh]);
+
+  async function handleRenameSave() {
+    if (!info || !nameValue.trim()) return;
+    setSavingName(true);
+    await renameHousehold(info.id, nameValue);
+    await refresh();
+    setSavingName(false);
+    setEditingName(false);
+  }
 
   async function handleGenerateLink() {
     if (!info) return;
@@ -113,9 +126,39 @@ export function HouseholdSection({ user }: { user: User }) {
     <div className="space-y-4">
       {/* Household name */}
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
-          {t("title")} · {info.name}
-        </p>
+        {editingName ? (
+          <div className="flex items-center gap-2 mb-2">
+            <Input
+              value={nameValue}
+              onChange={(e) => setNameValue(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleRenameSave(); if (e.key === "Escape") setEditingName(false); }}
+              className="h-7 text-xs"
+              autoFocus
+            />
+            <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={handleRenameSave} disabled={savingName || !nameValue.trim()}>
+              {savingName ? tc("saving") : tc("save")}
+            </Button>
+            <button type="button" onClick={() => setEditingName(false)} className="text-muted-foreground hover:text-foreground">
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-1.5 mb-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {t("title")} · {info.name}
+            </p>
+            {isOwner && (
+              <button
+                type="button"
+                onClick={() => { setNameValue(info.name); setEditingName(true); }}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label={t("rename")}
+              >
+                <Pencil className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Members */}
         <div className="space-y-2">

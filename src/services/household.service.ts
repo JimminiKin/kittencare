@@ -111,6 +111,13 @@ export async function transferOwnership(
     .eq("user_id", currentUserId);
 }
 
+export async function renameHousehold(householdId: string, newName: string): Promise<void> {
+  await getSupabaseClient()
+    .from("households")
+    .update({ name: newName.trim() })
+    .eq("id", householdId);
+}
+
 export async function leaveHousehold(householdId: string, userId: string): Promise<void> {
   await getSupabaseClient()
     .from("household_members")

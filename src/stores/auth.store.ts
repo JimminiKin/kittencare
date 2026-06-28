@@ -27,14 +27,16 @@ async function resolveHousehold(userId: string): Promise<HouseholdInfo | null> {
   return { householdId: row.household_id, role: row.role as string };
 }
 
-async function ensureHousehold(userId: string): Promise<HouseholdInfo | null> {
+async function ensureHousehold(userId: string, displayName?: string): Promise<HouseholdInfo | null> {
   const supabase = getSupabaseClient();
   const info = await resolveHousehold(userId);
   if (info) return info;
   console.log("[auth] No household found, creating one");
+  const firstName = displayName?.trim().split(/\s+/)[0];
+  const householdName = firstName ? `${firstName}'s Household` : "My Household";
   // Use the UUID returned by the RPC directly — avoids a second round-trip and
   // the consistency window where an immediate re-query might still see 0 rows.
-  const { data: newId, error } = await supabase.rpc("create_household", { p_name: "My Household" });
+  const { data: newId, error } = await supabase.rpc("create_household", { p_name: householdName });
   if (error || !newId) { console.error("[auth] create_household error:", error); return null; }
   return { householdId: newId as string, role: "owner" };
 }
@@ -51,13 +53,13 @@ async function fetchIsAdmin(userId: string): Promise<boolean> {
   return data?.is_admin === true;
 }
 
-async function activateCloud(userId: string): Promise<void> {
+async function activateCloud(userId: string, displayName?: string): Promise<void> {
   if (_activating) return;
   _activating = true;
 
   try {
     const [household, isAdmin] = await Promise.all([
-      ensureHousehold(userId),
+      ensureHousehold(userId, displayName),
       fetchIsAdmin(userId),
     ]);
     if (!household) {
@@ -114,7 +116,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         } else if (session?.user && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
           // Reset to skeleton while data loads; activateCloud sets ready: true when done
           set({ user: session.user, ready: false });
-          activateCloud(session.user.id);
+          const displayName = session.user.user_metadata?.display_name
+            ?? session.user.email?.split("@")[0];
+          activateCloud(session.user.id, displayName);
         } else if (!session?.user && event === "INITIAL_SESSION") {
           // If auth params are in the URL a SIGNED_IN is imminent — keep skeleton
           const href = typeof window !== "undefined" ? window.location.href : "";

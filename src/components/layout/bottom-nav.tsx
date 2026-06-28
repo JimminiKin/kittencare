@@ -2,26 +2,32 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Utensils, Scale, Users } from "lucide-react";
+import { Home, Utensils, Scale, Users, ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "@/i18n/context";
+import { useAuthStore } from "@/stores/auth.store";
 
-const NAV_ITEMS = [
+const BASE_NAV_ITEMS = [
   { href: "/", key: "home", icon: Home },
   { href: "/feed", key: "feed", icon: Utensils },
   { href: "/weight", key: "weight", icon: Scale },
   { href: "/account", key: "household", icon: Users },
 ] as const;
 
+const ADMIN_NAV_ITEM = { href: "/admin", key: "admin", icon: ShieldAlert } as const;
+
 export function BottomNav() {
   const pathname = usePathname();
   const t = useTranslations("nav");
+  const { isAdmin } = useAuthStore();
+
+  const navItems = isAdmin ? [...BASE_NAV_ITEMS, ADMIN_NAV_ITEM] : BASE_NAV_ITEMS;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
       <div className="mx-auto max-w-lg">
         <div className="flex items-stretch h-16">
-          {NAV_ITEMS.map(({ href, key, icon: Icon }) => {
+          {navItems.map(({ href, key, icon: Icon }) => {
             const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
             return (
               <Link
@@ -29,7 +35,9 @@ export function BottomNav() {
                 href={href}
                 className={cn(
                   "flex flex-1 flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors",
-                  active ? "text-primary" : "text-muted-foreground"
+                  active
+                    ? key === "admin" ? "text-orange-500" : "text-primary"
+                    : key === "admin" ? "text-orange-400/70" : "text-muted-foreground"
                 )}
               >
                 <Icon

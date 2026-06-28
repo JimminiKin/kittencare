@@ -4,7 +4,8 @@
     "kittens": "Kittens",
     "feed": "Feed",
     "weight": "Weight",
-    "household": "Household"
+    "household": "Household",
+    "admin": "Admin"
   },
   "common": {
     "saving": "Saving…",
@@ -324,7 +325,8 @@
     "removeTitle": "Remove {name}?",
     "removeBody": "{name} will lose access to this household.",
     "revokeTitle": "Revoke this invite?",
-    "revokeBody": "The invite link will no longer work."
+    "revokeBody": "The invite link will no longer work.",
+    "rename": "Rename household"
   },
   "invite": {
     "invitedBy": "{name} invited you to",
