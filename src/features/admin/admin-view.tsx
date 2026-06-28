@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { Search, ArrowRightLeft } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { Search, ArrowRightLeft, RefreshCw, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { useAuthStore } from "@/stores/auth.store";
 import { getSupabaseClient } from "@/lib/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface AdminKitten {
   id: string;
@@ -54,6 +54,9 @@ async function fetchHouseholds(token: string): Promise<Household[]> {
 
 export function AdminView() {
   const { user, isAdmin } = useAuthStore();
+  const qc = useQueryClient();
+
+  // Kitten search state
   const [query, setQuery] = useState("");
   const [submitted, setSubmitted] = useState("");
   const [transferTarget, setTransferTarget] = useState<AdminKitten | null>(null);
@@ -61,6 +64,14 @@ export function AdminView() {
   const [transferring, setTransferring] = useState(false);
   const [transferError, setTransferError] = useState<string | null>(null);
   const [successId, setSuccessId] = useState<string | null>(null);
+
+  // Admin actions state
+  const [orphanCount, setOrphanCount] = useState<number | null>(null);
+  const [renaming, setRenaming] = useState(false);
+  const [renameResult, setRenameResult] = useState<string | null>(null);
+  const [deletingOrphans, setDeletingOrphans] = useState(false);
+  const [orphanResult, setOrphanResult] = useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = useState<"rename" | "deleteOrphans" | null>(null);
 
   const { data: kittens = [], isFetching, refetch } = useQuery({
     queryKey: ["admin", "kittens", submitted],
@@ -114,6 +125,62 @@ export function AdminView() {
     }
   }
 
+  // Load orphan count on mount
+  useEffect(() => {
+    if (!isAdmin) return;
+    getToken().then((token) => {
+      if (!token) return;
+      fetch("/api/admin/households/orphaned", { headers: { Authorization: `Bearer ${token}` } })
+        .then((r) => r.json())
+        .then((b) => setOrphanCount(b.count ?? 0));
+    });
+  }, [isAdmin]);
+
+  async function handleRenameAll() {
+    setRenaming(true);
+    setRenameResult(null);
+    setConfirmAction(null);
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("Not authenticated");
+      const res = await fetch("/api/admin/households/rename-all", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error ?? "Failed");
+      setRenameResult(`Renamed ${body.renamed} household${body.renamed !== 1 ? "s" : ""}${body.skipped ? `, skipped ${body.skipped}` : ""}.`);
+      qc.invalidateQueries({ queryKey: ["admin", "households"] });
+    } catch (e: any) {
+      setRenameResult(e?.message ?? "Error");
+    } finally {
+      setRenaming(false);
+    }
+  }
+
+  async function handleDeleteOrphans() {
+    setDeletingOrphans(true);
+    setOrphanResult(null);
+    setConfirmAction(null);
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("Not authenticated");
+      const res = await fetch("/api/admin/households/orphaned", {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error ?? "Failed");
+      setOrphanResult(`Deleted ${body.deleted} orphaned household${body.deleted !== 1 ? "s" : ""}.`);
+      setOrphanCount(0);
+      qc.invalidateQueries({ queryKey: ["admin", "households"] });
+    } catch (e: any) {
+      setOrphanResult(e?.message ?? "Error");
+    } finally {
+      setDeletingOrphans(false);
+    }
+  }
+
   if (!isAdmin) {
     return <p className="text-center text-muted-foreground py-16">Access denied.</p>;
   }
@@ -129,6 +196,49 @@ export function AdminView() {
       <div>
         <h1 className="text-lg font-semibold">Admin</h1>
         <p className="text-sm text-muted-foreground">Search and transfer kittens across all households.</p>
+      </div>
+
+      {/* Admin actions */}
+      <div className="rounded-xl border border-orange-200 bg-orange-50/50 p-4 space-y-3">
+        <p className="text-xs font-semibold uppercase tracking-wide text-orange-500">Household actions</p>
+
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-sm font-medium">Rename all households</p>
+            <p className="text-xs text-muted-foreground">Sets each household to "{`{owner's first name}`}'s Household".</p>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="shrink-0 border-orange-200"
+            disabled={renaming}
+            onClick={() => setConfirmAction("rename")}
+          >
+            <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+            {renaming ? "Renaming…" : "Rename all"}
+          </Button>
+        </div>
+        {renameResult && <p className="text-xs text-muted-foreground">{renameResult}</p>}
+
+        <div className="border-t border-orange-100 pt-3 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-sm font-medium">Remove orphaned households</p>
+            <p className="text-xs text-muted-foreground">
+              {orphanCount === null ? "Checking…" : orphanCount === 0 ? "No orphaned households found." : `${orphanCount} orphaned household${orphanCount !== 1 ? "s" : ""} found.`}
+            </p>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="shrink-0 border-destructive/30 text-destructive hover:bg-destructive/10"
+            disabled={deletingOrphans || orphanCount === 0}
+            onClick={() => setConfirmAction("deleteOrphans")}
+          >
+            <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+            {deletingOrphans ? "Deleting…" : "Delete"}
+          </Button>
+        </div>
+        {orphanResult && <p className="text-xs text-muted-foreground">{orphanResult}</p>}
       </div>
 
       <form onSubmit={handleSearch} className="flex gap-2">
@@ -183,6 +293,25 @@ export function AdminView() {
           </div>
         ))}
       </div>
+
+      <ConfirmDialog
+        open={confirmAction === "rename"}
+        onClose={() => setConfirmAction(null)}
+        onConfirm={handleRenameAll}
+        title="Rename all households?"
+        body="This will overwrite every household name with the owner's first name. This cannot be undone."
+        confirmLabel="Rename all"
+      />
+
+      <ConfirmDialog
+        open={confirmAction === "deleteOrphans"}
+        onClose={() => setConfirmAction(null)}
+        onConfirm={handleDeleteOrphans}
+        title={`Delete ${orphanCount} orphaned household${orphanCount !== 1 ? "s" : ""}?`}
+        body="These households have no members. Deleting them is permanent."
+        confirmLabel="Delete orphans"
+        danger
+      />
 
       {/* Transfer dialog */}
       {transferTarget && (
