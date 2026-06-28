@@ -27,7 +27,7 @@ interface AdminKitten {
   householdName: string;
 }
 
-interface Household { id: string; name: string }
+interface Household { id: string; name: string; kittenCount: number; memberCount: number }
 
 async function getToken() {
   const { data: { session } } = await getSupabaseClient().auth.getSession();
@@ -72,6 +72,10 @@ export function AdminView() {
   const [deletingOrphans, setDeletingOrphans] = useState(false);
   const [orphanResult, setOrphanResult] = useState<string | null>(null);
   const [confirmAction, setConfirmAction] = useState<"rename" | "deleteOrphans" | null>(null);
+
+  // Household list state
+  const [deleteHousehold, setDeleteHousehold] = useState<Household | null>(null);
+  const [deletingHousehold, setDeletingHousehold] = useState(false);
 
   const { data: kittens = [], isFetching, refetch } = useQuery({
     queryKey: ["admin", "kittens", submitted],
@@ -181,6 +185,24 @@ export function AdminView() {
     }
   }
 
+  async function handleDeleteHousehold() {
+    if (!deleteHousehold) return;
+    setDeletingHousehold(true);
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("Not authenticated");
+      await fetch(`/api/admin/households/${deleteHousehold.id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setDeleteHousehold(null);
+      qc.invalidateQueries({ queryKey: ["admin", "households"] });
+      qc.invalidateQueries({ queryKey: ["admin", "kittens"] });
+    } finally {
+      setDeletingHousehold(false);
+    }
+  }
+
   if (!isAdmin) {
     return <p className="text-center text-muted-foreground py-16">Access denied.</p>;
   }
@@ -241,6 +263,34 @@ export function AdminView() {
         {orphanResult && <p className="text-xs text-muted-foreground">{orphanResult}</p>}
       </div>
 
+      {/* Households list */}
+      <div className="space-y-2">
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          Households ({households.length})
+        </p>
+        {households.length === 0 && (
+          <p className="text-sm text-muted-foreground text-center py-4">No households.</p>
+        )}
+        {households.map((h) => (
+          <div key={h.id} className="flex items-center gap-3 rounded-xl border p-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">{h.name}</p>
+              <p className="text-xs text-muted-foreground">
+                {h.kittenCount} cat{h.kittenCount !== 1 ? "s" : ""} · {h.memberCount} member{h.memberCount !== 1 ? "s" : ""}
+              </p>
+            </div>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="shrink-0 h-8 px-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+              onClick={() => setDeleteHousehold(h)}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        ))}
+      </div>
+
       <form onSubmit={handleSearch} className="flex gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -293,6 +343,16 @@ export function AdminView() {
           </div>
         ))}
       </div>
+
+      <ConfirmDialog
+        open={!!deleteHousehold}
+        onClose={() => setDeleteHousehold(null)}
+        onConfirm={handleDeleteHousehold}
+        title={`Delete "${deleteHousehold?.name}"?`}
+        body={`This will permanently delete the household and all its data — ${deleteHousehold?.kittenCount} cat${deleteHousehold?.kittenCount !== 1 ? "s" : ""}, all feedings, weights, and records. This cannot be undone.`}
+        confirmLabel={deletingHousehold ? "Deleting…" : "Delete household"}
+        danger
+      />
 
       <ConfirmDialog
         open={confirmAction === "rename"}
