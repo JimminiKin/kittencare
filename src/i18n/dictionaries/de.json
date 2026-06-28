@@ -395,5 +395,13 @@
     "errorAlreadyAccepted": "Diese Übertragung wurde bereits angenommen.",
     "errorNoHousehold": "Du musst einem Haushalt beitreten oder einen erstellen, bevor du eine Übertragung annehmen kannst.",
     "errorSameHousehold": "Du kannst eine Katze nicht in denselben Haushalt übertragen."
+  },
+  "adminTransfer": {
+    "sectionTitle": "Admin: force transfer",
+    "sectionDescription": "Immediately move this cat to any household. The original record is archived as transferred.",
+    "selectHousehold": "Select target household…",
+    "forceTransfer": "Force transfer",
+    "confirmTitle": "Force transfer this cat?",
+    "confirmBody": "This will immediately move {name} to {household}. The original record will be archived. This cannot be undone."
   }
 }

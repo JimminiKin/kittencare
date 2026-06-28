@@ -41,15 +41,28 @@ async function ensureHousehold(userId: string): Promise<HouseholdInfo | null> {
 
 let _activating = false;
 
+async function fetchIsAdmin(userId: string): Promise<boolean> {
+  const supabase = getSupabaseClient();
+  const { data } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", userId)
+    .single();
+  return data?.is_admin === true;
+}
+
 async function activateCloud(userId: string): Promise<void> {
   if (_activating) return;
   _activating = true;
 
   try {
-    const household = await ensureHousehold(userId);
+    const [household, isAdmin] = await Promise.all([
+      ensureHousehold(userId),
+      fetchIsAdmin(userId),
+    ]);
     if (!household) {
       console.error("[auth] Could not resolve household — staying in local mode");
-      useAuthStore.setState({ ready: true });
+      useAuthStore.setState({ ready: true, isAdmin });
       return;
     }
     const { householdId, role } = household;
@@ -58,7 +71,7 @@ async function activateCloud(userId: string): Promise<void> {
     setSessionContext({ userId, householdId });
     setUseCloudRepositories(true);
     getQueryClient().invalidateQueries();
-    useAuthStore.setState({ role: role as "owner" | "member", ready: true });
+    useAuthStore.setState({ role: role as "owner" | "member", isAdmin, ready: true });
 
     startRealtime(householdId, userId);
   } catch (err) {
@@ -73,6 +86,7 @@ interface AuthStore {
   user: User | null;
   ready: boolean;
   role: "owner" | "member" | null;
+  isAdmin: boolean;
   isRecovery: boolean;
   init: () => () => void;
   signInWithPassword: (email: string, password: string) => Promise<string | null>;
@@ -88,6 +102,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
   ready: false,
   role: null,
+  isAdmin: false,
   isRecovery: false,
 
   init: () => {
@@ -112,7 +127,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           setUseCloudRepositories(false);
           _activating = false;
           getQueryClient().clear();
-          set({ user: null, ready: true, role: null, isRecovery: false });
+          set({ user: null, ready: true, role: null, isAdmin: false, isRecovery: false });
         }
       }
     );

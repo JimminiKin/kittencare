@@ -395,5 +395,13 @@
     "errorAlreadyAccepted": "Questo trasferimento è già stato accettato.",
     "errorNoHousehold": "Devi unirti o creare una famiglia prima di accettare un trasferimento.",
     "errorSameHousehold": "Non puoi trasferire un gatto nella stessa famiglia."
+  },
+  "adminTransfer": {
+    "sectionTitle": "Admin: force transfer",
+    "sectionDescription": "Immediately move this cat to any household. The original record is archived as transferred.",
+    "selectHousehold": "Select target household…",
+    "forceTransfer": "Force transfer",
+    "confirmTitle": "Force transfer this cat?",
+    "confirmBody": "This will immediately move {name} to {household}. The original record will be archived. This cannot be undone."
   }
 }

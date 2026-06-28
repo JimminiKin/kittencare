@@ -395,5 +395,13 @@
     "errorAlreadyAccepted": "Ce transfert a déjà été accepté.",
     "errorNoHousehold": "Vous devez rejoindre ou créer un foyer avant d'accepter un transfert.",
     "errorSameHousehold": "Vous ne pouvez pas transférer un chat vers le même foyer."
+  },
+  "adminTransfer": {
+    "sectionTitle": "Admin: force transfer",
+    "sectionDescription": "Immediately move this cat to any household. The original record is archived as transferred.",
+    "selectHousehold": "Select target household…",
+    "forceTransfer": "Force transfer",
+    "confirmTitle": "Force transfer this cat?",
+    "confirmBody": "This will immediately move {name} to {household}. The original record will be archived. This cannot be undone."
   }
 }

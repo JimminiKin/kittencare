@@ -395,5 +395,13 @@
     "errorAlreadyAccepted": "This transfer has already been accepted.",
     "errorNoHousehold": "You need to join or create a household before accepting a transfer.",
     "errorSameHousehold": "You can't transfer a cat to the same household."
+  },
+  "adminTransfer": {
+    "sectionTitle": "Admin: force transfer",
+    "sectionDescription": "Immediately move this cat to any household. The original record is archived as transferred.",
+    "selectHousehold": "Select target household…",
+    "forceTransfer": "Force transfer",
+    "confirmTitle": "Force transfer this cat?",
+    "confirmBody": "This will immediately move {name} to {household}. The original record will be archived. This cannot be undone."
   }
 }

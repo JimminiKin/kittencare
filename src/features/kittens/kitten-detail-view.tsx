@@ -28,6 +28,7 @@ import { useKittenCare } from "@/hooks/use-kitten-care";
 import { useProfiles } from "@/hooks/use-profiles";
 import { ShareSection } from "./share-section";
 import { TransferSection } from "./transfer-section";
+import { AdminForceTransferSection } from "./admin-force-transfer-section";
 import { buildKittenSummaryFromData } from "@/services/alert.service";
 import { formatWeight, formatWeightChange } from "@/lib/utils";
 import { useFormatAge } from "@/lib/use-format-age";
@@ -319,6 +320,12 @@ export function KittenDetailView({ kittenId }: KittenDetailViewProps) {
       <ShareSection kittenId={kitten.id} kittenName={kitten.name} />
 
       <TransferSection kittenId={kitten.id} kittenName={kitten.name} />
+
+      <AdminForceTransferSection
+        kittenId={kitten.id}
+        kittenName={kitten.name}
+        onTransferred={() => router.push("/")}
+      />
 
       {kitten.status === "active" ? (
         <div className="pt-4 border-t">
