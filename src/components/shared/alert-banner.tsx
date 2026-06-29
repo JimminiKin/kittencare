@@ -51,6 +51,7 @@ const alertRoute: Record<AlertType, string> = {
   low_daily_intake: "/feed",
   medication_due: "/medications",
   medication_overdue: "/medications",
+  no_poo: "/health",
 };
 
 export function AlertBanner({ alerts }: AlertBannerProps) {
