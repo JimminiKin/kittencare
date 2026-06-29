@@ -55,6 +55,7 @@
     "nextIn": "tra {time}",
     "overdueBy": "{time} in ritardo",
     "dueNow": "adesso",
+    "everyInterval": "ogni {interval}",
     "quickFeed": "Nutri",
     "quickWeight": "Pesa",
     "quickMed": "Med"

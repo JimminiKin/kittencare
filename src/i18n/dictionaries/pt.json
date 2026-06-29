@@ -55,6 +55,7 @@
     "nextIn": "em {time}",
     "overdueBy": "{time} atrasado",
     "dueNow": "agora",
+    "everyInterval": "a cada {interval}",
     "quickFeed": "Alimentar",
     "quickWeight": "Pesar",
     "quickMed": "Meds"

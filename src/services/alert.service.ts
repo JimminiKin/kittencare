@@ -196,6 +196,7 @@ function buildSummaryFromParts({
     activeMedications: activeMeds,
     alerts,
     nextFeedingDueAt,
+    feedingIntervalHours: intervalHours,
   };
 }
 

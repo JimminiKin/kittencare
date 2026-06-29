@@ -142,6 +142,7 @@ export interface KittenSummary {
   alerts: Alert[];
   // When the next feeding is due (or was due, if in the past). Undefined = never fed.
   nextFeedingDueAt?: Date;
+  feedingIntervalHours: number;
 }
 
 export interface DailyFeedingSummary {

@@ -24,7 +24,7 @@ function formatDuration(ms: number): string {
 }
 
 export function DashboardCard({ summary }: DashboardCardProps) {
-  const { kitten, currentWeightGrams, weightChangeGrams, feedingsToday, eliminationsToday, activeMedications, alerts, nextFeedingDueAt } = summary;
+  const { kitten, currentWeightGrams, weightChangeGrams, feedingsToday, eliminationsToday, activeMedications, alerts, nextFeedingDueAt, feedingIntervalHours } = summary;
   const tc = useTranslations("card");
   const formatAge = useFormatAge();
 
@@ -117,6 +117,9 @@ export function DashboardCard({ summary }: DashboardCardProps) {
               <div className="font-bold text-base">{feedingsToday}</div>
               <div className={`text-xs font-medium ${feedingLabelColor}`}>
                 {feedingLabel}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                {tc("everyInterval", { interval: `${feedingIntervalHours}h` })}
               </div>
             </div>
 
