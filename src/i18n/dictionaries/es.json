@@ -56,6 +56,8 @@
     "overdueBy": "{time} de retraso",
     "dueNow": "ahora",
     "everyInterval": "cada {interval}",
+    "lastPooAgo": "caca hace {time}",
+    "lastPooNone": "sin caca registrada",
     "quickFeed": "Alimentar",
     "quickWeight": "Pesar",
     "quickMed": "Meds"
@@ -209,6 +211,7 @@
     "low_daily_intake": "La ingesta de {kittenName} hoy ({todayMl}ml) está muy por debajo del promedio ({avgMl}ml/día)",
     "medication_due": "Da {medicationName} a {kittenName}",
     "medication_overdue": "Da {medicationName} a {kittenName} — {overdueHours}h de retraso",
+    "no_poo": "{kittenName} no ha tenido deposición en más de 48 horas",
     "fixIt": "Ver",
     "doIt": "Actuar"
   },

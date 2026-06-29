@@ -33,6 +33,7 @@ function alertsFromData({
   last24hFeedings,
   activeMeds,
   getLatestAdmin,
+  lastPooAt,
 }: {
   kitten: Kitten;
   now: Date;
@@ -42,6 +43,7 @@ function alertsFromData({
   last24hFeedings: Feeding[];
   activeMeds: Medication[];
   getLatestAdmin: (medId: string) => MedicationAdministration | null | undefined;
+  lastPooAt?: Date;
 }): Alert[] {
   const alerts: Alert[] = [];
   const yesterday = subHours(now, 24);
@@ -132,6 +134,20 @@ function alertsFromData({
     }
   }
 
+  // Poo alert: warn if no poo recorded in the last 48h
+  const pooThresholdMs = 48 * 3_600_000;
+  const pooOverdueMs = lastPooAt
+    ? now.getTime() - lastPooAt.getTime()
+    : Infinity;
+  if (pooOverdueMs > pooThresholdMs) {
+    alerts.push({
+      id: uuid(), kittenId: kitten.id, kittenName: kitten.name,
+      type: "no_poo", severity: "warning", category: "warning",
+      params: { kittenName: kitten.name },
+      timestamp: now,
+    });
+  }
+
   return alerts;
 }
 
@@ -142,7 +158,7 @@ function buildSummaryFromParts({
   intervalHours,
   allWeights,
   weekFeedings,
-  todayEliminations,
+  recentEliminations,
   activeMeds,
   getLatestAdmin,
 }: {
@@ -152,7 +168,7 @@ function buildSummaryFromParts({
   intervalHours: number;
   allWeights: WeightEntry[];
   weekFeedings: Feeding[];
-  todayEliminations: EliminationEntry[];
+  recentEliminations: EliminationEntry[];
   activeMeds: Medication[];
   getLatestAdmin: (medId: string) => MedicationAdministration | null | undefined;
 }): KittenSummary {
@@ -161,12 +177,21 @@ function buildSummaryFromParts({
   );
   const todayFeedings = weekFeedings.filter((f) => f.timestamp >= startOfDay);
   const last24hFeedings = weekFeedings.filter((f) => f.timestamp >= subHours(now, 24));
+  const todayEliminations = recentEliminations.filter((e) => e.timestamp >= startOfDay);
+
+  const lastPooAt = recentEliminations
+    .filter((e) => e.poo)
+    .reduce<Date | undefined>(
+      (best, e) => (!best || e.timestamp > best ? e.timestamp : best),
+      undefined,
+    );
 
   const alerts = alertsFromData({
     kitten, now, intervalHours,
     sortedWeightsDesc: sortedWeights,
     weekFeedings, last24hFeedings,
     activeMeds, getLatestAdmin,
+    lastPooAt,
   });
 
   const lastFeeding = weekFeedings.reduce<Feeding | undefined>(
@@ -197,6 +222,7 @@ function buildSummaryFromParts({
     alerts,
     nextFeedingDueAt,
     feedingIntervalHours: intervalHours,
+    lastPooAt,
   };
 }
 
@@ -214,10 +240,10 @@ export async function buildKittenSummary(
   const intervalHours = getFeedingIntervalHours(kitten.estimatedAgeDays);
 
   // Batch 1: all independent queries in parallel
-  const [allWeights, weekFeedings, todayEliminations, activeMeds] = await Promise.all([
+  const [allWeights, weekFeedings, recentEliminations, activeMeds] = await Promise.all([
     repos.weights.getByKitten(kitten.id),
     repos.feedings.getByKittenSince(kitten.id, subHours(now, 168)),
-    repos.eliminations.getByKittenSince(kitten.id, startOfDay),
+    repos.eliminations.getByKittenSince(kitten.id, subHours(now, 48)),
     repos.medications.getActiveForKitten(kitten.id),
   ]);
 
@@ -229,7 +255,7 @@ export async function buildKittenSummary(
 
   return buildSummaryFromParts({
     kitten, now, startOfDay, intervalHours,
-    allWeights, weekFeedings, todayEliminations, activeMeds,
+    allWeights, weekFeedings, recentEliminations, activeMeds,
     getLatestAdmin: (id) => adminMap.get(id),
   });
 }
@@ -259,7 +285,7 @@ export function buildKittenSummaryFromData(
 
   const activeMeds = medications.filter((m) => !m.endDate || m.endDate > now);
   const weekFeedings = feedings.filter((f) => f.timestamp >= subHours(now, 168));
-  const todayEliminations = eliminations.filter((e) => e.timestamp >= startOfDay);
+  const recentEliminations = eliminations.filter((e) => e.timestamp >= subHours(now, 48));
 
   // Build latest-admin-per-med map from all loaded administrations
   const latestByMedId = new Map<string, MedicationAdministration>();
@@ -270,7 +296,7 @@ export function buildKittenSummaryFromData(
 
   return buildSummaryFromParts({
     kitten, now, startOfDay, intervalHours,
-    allWeights: weights, weekFeedings, todayEliminations, activeMeds,
+    allWeights: weights, weekFeedings, recentEliminations, activeMeds,
     getLatestAdmin: (id) => latestByMedId.get(id),
   });
 }

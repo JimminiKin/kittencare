@@ -101,7 +101,8 @@ export type AlertType =
   | "feeding_overdue"
   | "low_daily_intake"
   | "medication_due"
-  | "medication_overdue";
+  | "medication_overdue"
+  | "no_poo";
 
 export interface Alert {
   id: string;
@@ -143,6 +144,7 @@ export interface KittenSummary {
   // When the next feeding is due (or was due, if in the past). Undefined = never fed.
   nextFeedingDueAt?: Date;
   feedingIntervalHours: number;
+  lastPooAt?: Date;
 }
 
 export interface DailyFeedingSummary {

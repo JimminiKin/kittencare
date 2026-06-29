@@ -24,7 +24,7 @@ function formatDuration(ms: number): string {
 }
 
 export function DashboardCard({ summary }: DashboardCardProps) {
-  const { kitten, currentWeightGrams, weightChangeGrams, feedingsToday, eliminationsToday, activeMedications, alerts, nextFeedingDueAt, feedingIntervalHours } = summary;
+  const { kitten, currentWeightGrams, weightChangeGrams, feedingsToday, eliminationsToday, activeMedications, alerts, nextFeedingDueAt, feedingIntervalHours, lastPooAt } = summary;
   const tc = useTranslations("card");
   const formatAge = useFormatAge();
 
@@ -48,8 +48,14 @@ export function DashboardCard({ summary }: DashboardCardProps) {
     ? "text-red-600"
     : "text-muted-foreground";
 
-  // Compute feeding countdown
+  // Compute last poo label
   const now = Date.now();
+  const lastPooLabel = lastPooAt
+    ? tc("lastPooAgo", { time: formatDuration(now - lastPooAt.getTime()) })
+    : tc("lastPooNone");
+  const lastPooOverdue = !lastPooAt || (now - lastPooAt.getTime()) > 48 * 3_600_000;
+
+  // Compute feeding countdown
   let feedingLabel: string;
   let feedingLabelColor: string;
   if (!nextFeedingDueAt) {
@@ -128,6 +134,9 @@ export function DashboardCard({ summary }: DashboardCardProps) {
               <div className="font-bold text-base flex items-center justify-center gap-1">
                 <Droplets className="h-3.5 w-3.5 text-sky-500" />
                 {eliminationsToday}
+              </div>
+              <div className={`text-xs font-medium ${lastPooOverdue ? "text-amber-500" : "text-muted-foreground"}`}>
+                {lastPooLabel}
               </div>
               {activeMedications.length > 0 && (
                 <div className="flex items-center justify-center gap-0.5 text-xs text-violet-600">

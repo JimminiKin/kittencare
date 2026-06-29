@@ -56,6 +56,8 @@
     "overdueBy": "{time} overdue",
     "dueNow": "due now",
     "everyInterval": "every {interval}",
+    "lastPooAgo": "poo {time} ago",
+    "lastPooNone": "no poo logged",
     "quickFeed": "Feed",
     "quickWeight": "Weigh",
     "quickMed": "Meds"
@@ -209,6 +211,7 @@
     "low_daily_intake": "{kittenName}'s intake today ({todayMl}ml) is well below average ({avgMl}ml/day)",
     "medication_due": "Give {medicationName} to {kittenName}",
     "medication_overdue": "Give {medicationName} to {kittenName} — {overdueHours}h overdue",
+    "no_poo": "{kittenName} has not had a bowel movement in over 48 hours",
     "fixIt": "View",
     "doIt": "Do it"
   },
